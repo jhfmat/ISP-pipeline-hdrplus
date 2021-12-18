@@ -1,0 +1,1 @@
+g++ -std=c++11  MemPool.cpp MultiUshortImage.cpp  YUVToJpeg.cpp Common.cpp  MultiIntImage.cpp SingleUcharImage.cpp MathFunction.cpp   MultiShortImage.cpp  TimeStatistic.cpp Matrix.cpp    MultiUcharImage.cpp  YUV420Image.cpp -fPIC -shared -o libmat.so
