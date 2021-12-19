@@ -26,6 +26,6 @@ For detailed code usage, please refer to the example file.
 ## 3, How to compile a project
 
 
-### Window platform: We can use vs2017 to compile(open Mat.vcxproj)
-### Linux platform: We can use g++ to compile(/Linux/ build.cmd)
-### Android platform: We can use ndk to compile(/android/Jni/ build.cmd)
+* Window platform: We can use vs2017 to compile(open Mat.vcxproj)
+* Linux platform: We can use g++ to compile(/Linux/ build.cmd)
+* Android platform: We can use ndk to compile(/android/Jni/ build.cmd)
