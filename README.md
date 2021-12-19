@@ -35,3 +35,7 @@ For detailed code usage, please refer to the example file.
 
 
 https://blog.csdn.net/jhfnihao?type=blog
+
+## 5, License
+
+[BSD 3 Clause](LICENSE.txt)
