@@ -1,0 +1,154 @@
+
+CHDRPlus_Forward
+bDumpFileEnable=1;	ValueRange=[0,1,1]
+nBlockMatchFusionEnable=1;	ValueRange=[0,1,1]
+nBlackWhiteLevelEnable=1;	ValueRange=[0,1,1]
+nDPCorrectionEnable=1;	ValueRange=[0,1,1]
+nWhiteBalanceEnable=1;	ValueRange=[0,1,1]
+nDemosaicingEnable=1;	ValueRange=[0,1,1]
+nChromaDenoiseEnable=1;	ValueRange=[0,1,1]
+nColorCorectEnable=1;	ValueRange=[0,1,1]
+nTonemappingEnable=1;	ValueRange=[0,1,1]
+nGammaCorrectEnable=1;	ValueRange=[0,1,1]
+nContrastEnable=1;	ValueRange=[0,1,1]
+nSharpenEnable=1;	ValueRange=[0,1,1]
+
+CHDRPlus_BlockMatchFusion
+bDumpFileEnable=0;	ValueRange=[0,1,1]
+nManualAmount=16;	ValueRange=[1,100000,16]
+bAutoAmount=1;	ValueRange=[0,1,1]
+nGainOption=1;	ValueRange=[0,2,1]
+nGainList_0=32;	ValueRange=[16,8192,16];//iso 32 x2
+nGainList_1=64;	ValueRange=[16,8192,16];//iso 64 x4
+nGainList_2=128;	ValueRange=[16,8192,16];//iso 128 x8
+nAmountGainList_0=28;	ValueRange=[0,4096,16];
+nAmountGainList_1=32;	ValueRange=[0,4096,16];
+nAmountGainList_2=36;	ValueRange=[0,4096,16];
+nAmountFactor=4;	ValueRange=[0,10000,1];//ghost
+nMinDist=12;	ValueRange=[0,10000,1]
+nMaxDist=300;	ValueRange=[0,10000,1]
+nOffsetxLevel_0=4;	ValueRange=[0,1000,1]
+nOffsetxLevel_1=4;	ValueRange=[0,1000,1]
+nOffsetxLevel_2=4;	ValueRange=[0,1000,1]
+nOffsetxLevel_3=4;	ValueRange=[0,1000,1]
+nOffsetyLevel_0=4;	ValueRange=[0,1000,1]
+nOffsetyLevel_1=4;	ValueRange=[0,1000,1]
+nOffsetyLevel_2=4;	ValueRange=[0,1000,1]
+nOffsetyLevel_3=4;	ValueRange=[0,1000,1]
+
+CHDRPlus_BlackWhiteLevel
+bDumpFileEnable=0;	ValueRange=[0,1,1]
+
+CHDRPlus_DPCorrection
+bDumpFileEnable=0;	ValueRange=[0,1,1]
+bWPCEnable=1;	ValueRange=[0,1,1]
+nWPCThre=5;	ValueRange=[0,65536,1]
+nWPCRatioT=0;	ValueRange=[0,65536,1]
+bBPCEnable=1;	ValueRange=[0,1,1]
+nBPCThre=5;	ValueRange=[0,65536,1]
+nBPCRatioT=0;	ValueRange=[0,65536,1]
+
+CHDRPlus_WhiteBalance
+bDumpFileEnable=0;	ValueRange=[0,1,1]
+
+CHDRPlus_Demosaicing
+bDumpFileEnable=0;	ValueRange=[0,1,1]
+
+CHDRPlus_ChromaDenoise
+bDumpFileEnable=0;	ValueRange=[0,1,1]
+nManualAmount=16;	ValueRange=[1,100000,16]
+bAutoAmount=1;	ValueRange=[0,1,1]
+nGainOption=1;	ValueRange=[0,2,1]
+nGainList_0=32;	ValueRange=[16,8192,16];//iso 32 x2
+nGainList_1=64;	ValueRange=[16,8192,16];//iso 64 x4
+nGainList_2=128;	ValueRange=[16,8192,16];//iso 128 x8
+nAmountGainList_0=16;	ValueRange=[0,4096,16];
+nAmountGainList_1=32;	ValueRange=[0,4096,16];
+nAmountGainList_2=48;	ValueRange=[0,4096,16];
+nYnoiseBilateralThre=512;	ValueRange=[0,65535,1]
+nDenoiseTimes=3;	ValueRange=[0,65535,1]
+nRatioThre=22;	ValueRange=[0,65535,16]
+nThreshold=25000;	ValueRange=[0,65535,1]
+nAddSaturation=17;	ValueRange=[0,65535,16]
+
+CHDRPlus_ColorCorect
+bDumpFileEnable=0;	ValueRange=[0,1,1]
+
+CHDRPlus_Tonemapping
+bDumpFileEnable=0;	ValueRange=[0,1,1]
+nManualAmount=16;	ValueRange=[1,100000,16]
+bAutoAmount=1;	ValueRange=[0,1,1]
+nGainOption=1;	ValueRange=[0,2,1]
+nGainList_0=512;	ValueRange=[16,8192,128];//iso 512 x4
+nGainList_1=1024;	ValueRange=[16,8192,128];//iso 1024 x8
+nGainList_2=2048;	ValueRange=[16,8192,128];//iso 2048 x16
+nAmountGainList_0=16;	ValueRange=[0,4096,16];
+nAmountGainList_1=32;	ValueRange=[0,4096,16];
+nAmountGainList_2=48;	ValueRange=[0,4096,16];
+nTargetY=1500;	ValueRange=[0,65535,1]
+bAutoDigiGainEnable=1;	ValueRange=[0,1,1]
+bKeepHighLightEnable=1;	ValueRange=[0,1,1]
+nMaxDigiGain=128;	ValueRange=[0,65535,128]
+nMaxTotalGain=18;	ValueRange=[1,65536,128]
+nBlockWeightMap_0_0=1;	ValueRange=[0,16,1]
+nBlockWeightMap_0_1=2;	ValueRange=[0,16,1]
+nBlockWeightMap_0_2=2;	ValueRange=[0,16,1]
+nBlockWeightMap_0_3=1;	ValueRange=[0,16,1]
+nBlockWeightMap_1_0=2;	ValueRange=[0,16,1]
+nBlockWeightMap_1_1=4;	ValueRange=[0,16,1]
+nBlockWeightMap_1_2=4;	ValueRange=[0,16,1]
+nBlockWeightMap_1_3=2;	ValueRange=[0,16,1]
+nBlockWeightMap_2_0=2;	ValueRange=[0,16,1]
+nBlockWeightMap_2_1=4;	ValueRange=[0,16,1]
+nBlockWeightMap_2_2=4;	ValueRange=[0,16,1]
+nBlockWeightMap_2_3=2;	ValueRange=[0,16,1]
+nBlockWeightMap_3_0=1;	ValueRange=[0,16,1]
+nBlockWeightMap_3_1=2;	ValueRange=[0,16,1]
+nBlockWeightMap_3_2=2;	ValueRange=[0,16,1]
+nBlockWeightMap_3_3=1;	ValueRange=[0,16,1]
+nHighLevelPtsPercent_0=16;	ValueRange=[0,65536,1];16/65536 Ratio of histogram between 0 and X
+nHighLevelPtsPercent_1=64;	ValueRange=[0,65536,1];64/64435 Ratio of histogram between 0 and X
+nVirtualExposureNum=3;	ValueRange=[0,65535,1]
+nDynamicCompression=742;	ValueRange=[0,65535,128]
+nSmoothYThreP_0=64;	ValueRange=[1,4096,1]	;//bright edge
+nSmoothYThreP_1=96;	ValueRange=[1,4096,1]
+nSmoothYThreP_2=128;	ValueRange=[1,4096,1]
+nSmoothYThreP_3=196;	ValueRange=[1,4096,1]
+nSmoothYThreP_4=256;	ValueRange=[1,4096,1]
+nSmoothYThreP_5=384;	ValueRange=[1,4096,1]
+nSmoothYThreP_6=384;	ValueRange=[1,4096,1]
+nSmoothYThreP_7=512;	ValueRange=[1,4096,1]
+nSmoothYThreP_8=512;	ValueRange=[1,4096,1]
+nSmoothYThreP_9=512;	ValueRange=[1,4096,1]
+nSmoothYThreP_10=1024;	ValueRange=[1,4096,1]
+nSmoothYThreP_11=1024;	ValueRange=[1,4096,1]
+nSmoothYThreP_12=4096;	ValueRange=[1,4096,1]
+nSmoothYThreM_0=96;	ValueRange=[1,4096,1];//dark edge
+nSmoothYThreM_1=128;	ValueRange=[1,4096,1]
+nSmoothYThreM_2=196;	ValueRange=[1,4096,1]
+nSmoothYThreM_3=256;	ValueRange=[1,4096,1]
+nSmoothYThreM_4=384;	ValueRange=[1,4096,1]
+nSmoothYThreM_5=512;	ValueRange=[1,4096,1] ;//300
+nSmoothYThreM_6=768;	ValueRange=[1,4096,1] ;//300
+nSmoothYThreM_7=1024;	ValueRange=[1,4096,1] ;//100
+nSmoothYThreM_8=1024;	ValueRange=[1,4096,1] ;//100
+nSmoothYThreM_9=2048;	ValueRange=[1,4096,1]
+nSmoothYThreM_10=2048;	ValueRange=[1,4096,1]
+nSmoothYThreM_11=4096;	ValueRange=[1,4096,1]
+nSmoothYThreM_12=4096;	ValueRange=[1,4096,1]
+
+CHDRPlus_GammaCorrect
+bDumpFileEnable=0;	ValueRange=[0,1,1]
+
+CHDRPlus_Contrast
+bDumpFileEnable=0;	ValueRange=[0,1,1]
+nBlacklevel=2000;	ValueRange=[0,65535,1]
+ContrastStrength=80;	ValueRange=[0,65535,16]
+
+CHDRPlus_Sharpen
+bDumpFileEnable=0;	ValueRange=[0,1,1]
+nSharpenStrength=32;	ValueRange=[0,65535,16]
+
+CHDRPlus_Normalize
+bDumpFileEnable=0;	ValueRange=[0,1,1]
+nOutBit=8;	ValueRange=[0,65535,1]
