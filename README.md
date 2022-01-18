@@ -53,7 +53,7 @@ For detailed code usage, please refer to the example file.
 ![run23.png](./Picture/run23.png)
  
 #### Outbmp目录下生成Normalize.bmp如图：
-![basicisp.png](./Picture/basicisp.png)
+![basicispss.png](./Picture/basicispss.png)
 
  
 #### 打开网络模块开启上述三个模块如图：
@@ -61,7 +61,7 @@ For detailed code usage, please refer to the example file.
  
 #### 删除outbmp/Normalize.bmp 再次运行run23.bat
 #### outbmp目录下生成Normalize.bmp图如下：
-![myisp.png](./Picture/myisp.png)
+![myispss.png](./Picture/myispss.png)
  
 
 #### 下载hdrplus里面的demo测试结果图项目链接
@@ -69,7 +69,7 @@ For detailed code usage, please refer to the example file.
 ![hdrplusziplianjie.png](./Picture/hdrplusziplianjie.png)
 ![hdrpluszip.png](./Picture/hdrpluszip.png)
 #### hdrplus测试结果图
-![hdrplusout23.png](./Picture/hdrplusout23.png)
+![hdrplusout23ss.png](./Picture/hdrplusout23ss.png)
  
 #### 解压001压缩包找到里面output23.png
 ![hdrplusdemooutdir.png](./Picture/hdrplusdemooutdir.png)
