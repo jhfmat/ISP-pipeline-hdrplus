@@ -32,7 +32,10 @@ For detailed code usage, please refer to the example file.
 测试图片demo下载链接
 链接：https://pan.baidu.com/s/1PdGphn8Z5f7zKtkReOgmhg 
 提取码：aaaa
-(DecedeCR2.exe文件说将.CR2文件解码到.raw文件和生成相关的参数文件.txt)
+(DecedeCR2.exe文件说将.CR2文件解码到.raw文件和生成相关的参数文件.txt,ISPpipeline.exe是一套isp将raw处理到bmp流程)
+![run23detail.png](./Picture/run23detail.png)
+#### 基于mat hdrplus 框架图
+![ISPpipeline.png](./Picture/ISPpipeline.png)
 
 #### 打开网络参数文件
 ![weight.param.png](./Picture/weight.param.png)
@@ -46,19 +49,18 @@ For detailed code usage, please refer to the example file.
 ![sampleweight.png](./Picture/sampleweight.png)
 
  
-#### 运行run23.bat(DecedeCR2.exe将.cr2文件解码到.raw文件和.txt文件，ISPpipeline.exe是一套isp将raw处理到bmp流程)
-![run23detail.png](./Picture/run23detail.png)
+#### 运行run23.bat
 ![run23.png](./Picture/run23.png)
  
 #### Outbmp目录下生成Normalize.bmp如图：
-![sampleisp.png](./Picture/sampleisp.png)
+![basicisp.png](./Picture/basicisp.png)
 
  
 #### 打开网络模块开启上述三个模块如图：
 ![fullweight.png](./Picture/fullweight.png)
  
 #### 删除outbmp/Normalize.bmp 再次运行run23.bat
-#### Outbmp目录下生成Normalize.bmp图如下：
+#### outbmp目录下生成Normalize.bmp图如下：
 ![myisp.png](./Picture/myisp.png)
  
 
