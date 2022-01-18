@@ -1,5 +1,5 @@
 #include "HDRPlus_Forward.h"
-void CHDRPlus_Forward::Forward(MultiUshortImage *InRawImage,MultiUcharImage *OutRGBImage8, TGlobalControl *pControl)
+void CHDRPlus_Forward::Forward(MultiUshortImage *InRawImage, MultiUcharImage *OutRGBImage8, TGlobalControl *pControl)
 {
 	const int Framenum = 8;
 	int nFrameID[Framenum];
@@ -32,6 +32,10 @@ void CHDRPlus_Forward::Forward(MultiUshortImage *InRawImage,MultiUcharImage *Out
 		{
 			OutDpcRaw.SaveSingleChannelToBitmapFile("outbmp/DPCorrection.bmp", 0, OutDpcRaw.GetMaxVal(), 256, 0);
 		}
+	}
+	else
+	{
+		OutDpcRaw.Clone(&InRawImage[0]);
 	}
 	if (m_nWhiteBalanceEnable)
 	{
