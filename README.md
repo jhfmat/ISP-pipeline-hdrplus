@@ -32,16 +32,16 @@ For detailed code usage, please refer to the example file.
 测试图片demo下载链接
 链接：https://pan.baidu.com/s/1PdGphn8Z5f7zKtkReOgmhg 
 提取码：aaaa
-(DecedeCR2.exe文件说将.CR2文件解码到.raw文件和生成相关的参数文件.txt,ISPpipeline.exe是一套isp将raw处理到bmp流程)
+(DecedeCR2.exe文件将.CR2文件解码到.raw文件和生成相关的参数文件.txt,ISPpipeline.exe是一套isp将raw处理到bmp流程)
 ![run23detail.png](./Picture/run23detail.png)
 #### 基于mat hdrplus 框架图
 ![ISPpipeline.png](./Picture/ISPpipeline.png)
 
-#### 打开网络参数文件
+#### 1,打开网络参数文件
 ![weight.param.png](./Picture/weight.param.png)
 
 
-#### 关闭isp种核心三个模块
+#### 2,关闭isp种核心三个模块
 * nBlockMatchFusionEnable=0;	ValueRange=[0,1,1] 多帧去噪
 * nChromaDenoiseEnable=0;	ValueRange=[0,1,1] 去除彩色噪声
 * nTonemappingEnable=0;	ValueRange=[0,1,1] 动态范围压缩
@@ -49,14 +49,14 @@ For detailed code usage, please refer to the example file.
 ![sampleweight.png](./Picture/sampleweight.png)
 
  
-#### 运行run23.bat
+#### 3,运行run23.bat
 ![run23.png](./Picture/run23.png)
  
 #### Outbmp目录下生成Normalize.bmp如图：
 ![basicispss.png](./Picture/basicispss.png)
 
  
-#### 打开网络模块开启上述三个模块如图：
+#### 4,打开网络模块开启上述三个模块如图：
 ![fullweight.png](./Picture/fullweight.png)
  
 #### 删除outbmp/Normalize.bmp 再次运行run23.bat
@@ -64,20 +64,20 @@ For detailed code usage, please refer to the example file.
 ![myispss.png](./Picture/myispss.png)
  
 
-#### 下载hdrplus里面的demo测试结果图项目链接
+#### 5,下载hdrplus里面的demo测试结果图项目链接
 #### https://github.com/timothybrooks/hdr-plus
 ![hdrplusziplianjie.png](./Picture/hdrplusziplianjie.png)
 ![hdrpluszip.png](./Picture/hdrpluszip.png)
 #### hdrplus测试结果图
 ![hdrplusout23ss.png](./Picture/hdrplusout23ss.png)
  
-#### 解压001压缩包找到里面output23.png
+#### 6,解压001压缩包找到里面output23.png
 ![hdrplusdemooutdir.png](./Picture/hdrplusdemooutdir.png)
  
 
-#### 三张图整体对比
+#### 7,三张图整体对比
 ![fullcompare.png](./Picture/fullcompare.png)
-#### 三张细节对比
+#### 8,三张细节对比
 ![detailcompare.png](./Picture/detailcompare.png)
 
 
