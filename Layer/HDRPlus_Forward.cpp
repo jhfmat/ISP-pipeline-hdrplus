@@ -1,5 +1,5 @@
 #include "HDRPlus_Forward.h"
-void CHDRPlus_Forward::Forward(MultiUshortImage *InRawImage, MultiUcharImage *OutRGBImage8, TGlobalControl *pControl)
+void CHDRPlus_Forward::Forward(MultiUshortImage *InRawImage,MultiUcharImage *OutRGBImage8, TGlobalControl *pControl)
 {
 	const int Framenum = 8;
 	int nFrameID[Framenum];
@@ -17,14 +17,6 @@ void CHDRPlus_Forward::Forward(MultiUshortImage *InRawImage, MultiUcharImage *Ou
 			InRawImage[0].SaveSingleChannelToBitmapFile("outbmp/BlockMatchFusion.bmp", 0, InRawImage[0].GetMaxVal(), 256, 0);
 		}
 	}
-	if (m_nBlackWhiteLevelEnable)
-	{
-		m_HDRPlus_BlackWhiteLevel.Forward(&InRawImage[0], pControl);
-		if (m_HDRPlus_BlackWhiteLevel.m_bDumpFileEnable)
-		{
-			InRawImage[0].SaveSingleChannelToBitmapFile("outbmp/BlackWhiteLevel.bmp", 0, InRawImage[0].GetMaxVal(), 256, 0);
-		}
-	}
 	if (m_nDPCorrectionEnable)
 	{
 		m_HDRPlus_DPCorrection.Forward(&InRawImage[0], &OutDpcRaw, pControl);
@@ -36,6 +28,14 @@ void CHDRPlus_Forward::Forward(MultiUshortImage *InRawImage, MultiUcharImage *Ou
 	else
 	{
 		OutDpcRaw.Clone(&InRawImage[0]);
+	}
+	if (m_nBlackWhiteLevelEnable)
+	{
+		m_HDRPlus_BlackWhiteLevel.Forward(&OutDpcRaw, pControl);
+		if (m_HDRPlus_BlackWhiteLevel.m_bDumpFileEnable)
+		{
+			OutDpcRaw.SaveSingleChannelToBitmapFile("outbmp/BlackWhiteLevel.bmp", 0, OutDpcRaw.GetMaxVal(), 256, 0);
+		}
 	}
 	if (m_nWhiteBalanceEnable)
 	{

@@ -2,8 +2,8 @@
 CHDRPlus_Forward
 bDumpFileEnable=1;	ValueRange=[0,1,1]
 nBlockMatchFusionEnable=1;	ValueRange=[0,1,1]
-nBlackWhiteLevelEnable=1;	ValueRange=[0,1,1]
 nDPCorrectionEnable=1;	ValueRange=[0,1,1]
+nBlackWhiteLevelEnable=1;	ValueRange=[0,1,1]
 nWhiteBalanceEnable=1;	ValueRange=[0,1,1]
 nDemosaicingEnable=1;	ValueRange=[0,1,1]
 nChromaDenoiseEnable=1;	ValueRange=[0,1,1]
@@ -36,17 +36,17 @@ nOffsetyLevel_1=4;	ValueRange=[0,1000,1]
 nOffsetyLevel_2=4;	ValueRange=[0,1000,1]
 nOffsetyLevel_3=4;	ValueRange=[0,1000,1]
 
-CHDRPlus_BlackWhiteLevel
-bDumpFileEnable=0;	ValueRange=[0,1,1]
-
 CHDRPlus_DPCorrection
 bDumpFileEnable=0;	ValueRange=[0,1,1]
-bWPCEnable=1;	ValueRange=[0,1,1]
-nWPCThre=5;	ValueRange=[0,65536,1]
-nWPCRatioT=0;	ValueRange=[0,65536,1]
-bBPCEnable=1;	ValueRange=[0,1,1]
-nBPCThre=5;	ValueRange=[0,65536,1]
-nBPCRatioT=0;	ValueRange=[0,65536,1]
+bWhitePointCEnable=1;	ValueRange=[0,1,1]
+nWhitePointCThre=5;	ValueRange=[0,65536,1]
+nWhitePointLRatioT=8;	ValueRange=[0,65536,1]
+bBlackPointCEnable=1;	ValueRange=[0,1,1]
+nBlackPointCThre=5;	ValueRange=[0,65536,1]
+nBlackPointLRatioT=0;	ValueRange=[0,65536,1]
+
+CHDRPlus_BlackWhiteLevel
+bDumpFileEnable=0;	ValueRange=[0,1,1]
 
 CHDRPlus_WhiteBalance
 bDumpFileEnable=0;	ValueRange=[0,1,1]

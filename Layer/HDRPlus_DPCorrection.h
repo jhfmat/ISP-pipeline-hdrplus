@@ -6,28 +6,24 @@ class CHDRPlus_DPCorrection : public CSingleConfigTitleFILE
 private:
 	int m_nBLC;
 	int m_nMAXS;
-	int m_nWindow[3][5];
-	int m_nSum[5];
-	int m_nMax[5];
-	int m_nMin[5];
-	int ProcessWindow(int nWindow[][5], int nMax[5], int nMin[5]);	
+	int ProcessBlock(unsigned int nWindow[][5],unsigned int nMax[5], unsigned int nMin[5]);
 protected:
 	virtual void InitConfigParamList()
 	{
 		m_nConfigParamList.ConfigParamListAddVariable("bDumpFileEnable", &m_bDumpFileEnable, 0, 1);
 		m_bDumpFileEnable = 1;
-		m_nConfigParamList.ConfigParamListAddVariable("bWPCEnable", &m_bWPCEnable, 0, 1);
-		m_bWPCEnable = 1;
-		m_nConfigParamList.ConfigParamListAddVariable("nWPCThre", &m_nWPCThre, 0, 65536);
-		m_nWPCThre = 5;//越小白点少
-		m_nConfigParamList.ConfigParamListAddVariable("nWPCRatioT", &m_nWPCRatioT, 0, 65536);
-		m_nWPCRatioT = 0;
-		m_nConfigParamList.ConfigParamListAddVariable("bBPCEnable", &m_bBPCEnable, 0, 1);
-		m_bBPCEnable = 1;
-		m_nConfigParamList.ConfigParamListAddVariable("nBPCThre", &m_nBPCThre, 0, 65536);
-		m_nBPCThre = 5;//越小黑点越少
-		m_nConfigParamList.ConfigParamListAddVariable("nBPCRatioT", &m_nBPCRatioT, 0, 65536);
-		m_nBPCRatioT = 0;
+		m_nConfigParamList.ConfigParamListAddVariable("bWhitePointCEnable", &m_bWhitePointCEnable, 0, 1);
+		m_bWhitePointCEnable = 1;
+		m_nConfigParamList.ConfigParamListAddVariable("nWhitePointCThre", &m_nWhitePointCThre, 0, 65536);
+		m_nWhitePointCThre = 5;//越小白点少
+		m_nConfigParamList.ConfigParamListAddVariable("nWhitePointLRatioT", &m_nWhitePointLRatioT, 0, 65536);
+		m_nWhitePointLRatioT = 0;
+		m_nConfigParamList.ConfigParamListAddVariable("bBlackPointCEnable", &m_bBlackPointCEnable, 0, 1);
+		m_bBlackPointCEnable = 1;
+		m_nConfigParamList.ConfigParamListAddVariable("nBlackPointCThre", &m_nBlackPointCThre, 0, 65536);
+		m_nBlackPointCThre = 5;//越小黑点越少
+		m_nConfigParamList.ConfigParamListAddVariable("nBlackPointLRatioT", &m_nBlackPointLRatioT, 0, 65536);
+		m_nBlackPointLRatioT = 0;
 	}
 	virtual void CreateConfigTitleName()
 	{
@@ -35,12 +31,12 @@ protected:
 	}
 public:
 	int m_bDumpFileEnable;
-	int m_bWPCEnable;
-	int m_nWPCThre;
-	int m_nWPCRatioT;
-	int m_bBPCEnable;
-	int m_nBPCThre;
-	int m_nBPCRatioT;
+	int m_bWhitePointCEnable;
+	int m_nWhitePointCThre;
+	int m_nWhitePointLRatioT;
+	int m_bBlackPointCEnable;
+	int m_nBlackPointCThre;
+	int m_nBlackPointLRatioT;
 	CHDRPlus_DPCorrection()
 	{
 		Initialize();

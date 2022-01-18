@@ -18,8 +18,8 @@ class CHDRPlus_Forward : public CMultiConfigFILE
 {
 protected:
 	CHDRPlus_BlockMatchFusion m_HDRPlus_BlockMatchFusion;
-	CHDRPlus_BlackWhiteLevel m_HDRPlus_BlackWhiteLevel;
 	CHDRPlus_DPCorrection m_HDRPlus_DPCorrection;
+	CHDRPlus_BlackWhiteLevel m_HDRPlus_BlackWhiteLevel;
 	CHDRPlus_WhiteBalance m_HDRPlus_WhiteBalance;
 	CHDRPlus_Demosaicing m_HDRPlus_Demosaicing;
 	CHDRPlus_ColorCorect m_HDRPlus_ColorCorect;
@@ -32,8 +32,8 @@ protected:
 	virtual void CreateConfigTitleNameList()
 	{
 		AddConfigTitle(&m_HDRPlus_BlockMatchFusion);
-		AddConfigTitle(&m_HDRPlus_BlackWhiteLevel);
 		AddConfigTitle(&m_HDRPlus_DPCorrection);
+		AddConfigTitle(&m_HDRPlus_BlackWhiteLevel);
 		AddConfigTitle(&m_HDRPlus_WhiteBalance);
 		AddConfigTitle(&m_HDRPlus_Demosaicing);
 		AddConfigTitle(&m_HDRPlus_ChromaDenoise);

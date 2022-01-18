@@ -1,23 +1,27 @@
 #include "HDRPlus_DPCorrection.h"
-int CHDRPlus_DPCorrection::ProcessWindow(int nWindow[][5],int nMax[5], int nMin[5])
+/*
+获取块里面Max和min，如果中心值Y大于max+thre则Y= max Y+thre<min Y=min 返回Y值作为去除坏点后的值
+像素值在这个块里面要小于等于最大的大于等于最小的
+*/
+int CHDRPlus_DPCorrection::ProcessBlock(unsigned int nWindow[][5],unsigned int nMax[5], unsigned int nMin[5])
 {
-	int Y, Max, Min;
+	unsigned int Y, Max, Min;
 	bool bDPC = false;
 	Y = nWindow[1][2];
-	int nWPCThre = m_nWPCThre;
-	int nBPCThre = m_nBPCThre;
+	int nWhitePointCThre = m_nWhitePointCThre;
+	int nBlackPointCThre = m_nBlackPointCThre;
 	if (Y >= m_nBLC)
 	{
-		nWPCThre += ((Y - m_nBLC)*m_nWPCRatioT) >> 8;
-		nBPCThre += ((Y - m_nBLC)*m_nBPCRatioT) >> 8;
+		nWhitePointCThre += ((Y - m_nBLC)*m_nWhitePointLRatioT) >> 8;
+		nBlackPointCThre += ((Y - m_nBLC)*m_nBlackPointLRatioT) >> 8;
 	}
 	Max = MAX2(MAX2(nMax[0], nMax[4]), MAX2(nWindow[0][2], nWindow[2][2]));
 	Min = MIN2(MIN2(nMin[0], nMin[4]), MIN2(nWindow[0][2], nWindow[2][2]));
-	if (m_bWPCEnable == 1 && Y > Max + nWPCThre)
+	if (m_bWhitePointCEnable == 1 && Y > Max + nWhitePointCThre)//nWhitePointCThre越大则进来少去白点少
 	{
 		Y = Max;
 	}
-	if (m_bBPCEnable == 1 && Y + nBPCThre < Min)
+	if (m_bBlackPointCEnable == 1 && Y + nBlackPointCThre < Min)//nBPCThre越大则进来的少去黑点少
 	{
 		Y = Min;
 	}
@@ -26,28 +30,28 @@ int CHDRPlus_DPCorrection::ProcessWindow(int nWindow[][5],int nMax[5], int nMin[
 void CHDRPlus_DPCorrection::ProcessLine(unsigned short *pInLines[], unsigned short *pOutLine, int nWidth)
 {
 	unsigned short *pIn[3];
-	int nWindow[3][5];
-	int nSum[5];
-	int nMax[5];
-	int nMin[5];
+	unsigned int nBlock[3][5];
+	unsigned int nSum[5];
+	unsigned int nMax[5];
+	unsigned int nMin[5];
 	for (int i = 0; i < 3; i++)
 	{
 		pIn[i] = pInLines[i * 2];
-		nWindow[i][0] = pIn[i][2];
-		nWindow[i][1] = pIn[i][3];
-		nWindow[i][2] = *(pIn[i]++);
-		nWindow[i][3] = *(pIn[i]++);
+		nBlock[i][0] = pIn[i][2];
+		nBlock[i][1] = pIn[i][3];
+		nBlock[i][2] = *(pIn[i]++);
+		nBlock[i][3] = *(pIn[i]++);
 	}
 	for (int i = 0; i < 4; i++)
 	{
-		nSum[i] = nWindow[0][i] + nWindow[1][i] + nWindow[2][i];
-		if (m_bWPCEnable == 1)
+		nSum[i] = nBlock[0][i] + nBlock[1][i] + nBlock[2][i];
+		if (m_bWhitePointCEnable == 1)
 		{
-			nMax[i] = MAX2(nWindow[0][i], MAX2(nWindow[1][i], nWindow[2][i]));
+			nMax[i] = MAX2(nBlock[0][i], MAX2(nBlock[1][i], nBlock[2][i]));
 		}
-		if (m_bBPCEnable == 1)
+		if (m_bBlackPointCEnable == 1)
 		{
-			nMin[i] = MIN2(nWindow[0][i], MIN2(nWindow[1][i], nWindow[2][i]));
+			nMin[i] = MIN2(nBlock[0][i], MIN2(nBlock[1][i], nBlock[2][i]));
 		}
 	}
 	int x = 0;
@@ -55,33 +59,33 @@ void CHDRPlus_DPCorrection::ProcessLine(unsigned short *pInLines[], unsigned sho
 	{
 		for (int i = 0; i < 3; i++)
 		{
-			nWindow[i][4] = *(pIn[i]++);
-			nSum[4] = nWindow[0][4] + nWindow[1][4] + nWindow[2][4];
-			if (m_bWPCEnable == 1)
+			nBlock[i][4] = *(pIn[i]++);
+			nSum[4] = nBlock[0][4] + nBlock[1][4] + nBlock[2][4];
+			if (m_bWhitePointCEnable == 1)
 			{
-				nMax[4] = MAX2(nWindow[0][4], MAX2(nWindow[1][4], nWindow[2][4]));
+				nMax[4] = MAX2(nBlock[0][4], MAX2(nBlock[1][4], nBlock[2][4]));
 			}
-			if (m_bBPCEnable == 1)
+			if (m_bBlackPointCEnable == 1)
 			{
-				nMin[4] = MIN2(nWindow[0][4], MIN2(nWindow[1][4], nWindow[2][4]));
+				nMin[4] = MIN2(nBlock[0][4], MIN2(nBlock[1][4], nBlock[2][4]));
 			}
 		}
-		*(pOutLine++) = (unsigned short)ProcessWindow(nWindow, nMax,  nMin);
+		*(pOutLine++) = (unsigned short)ProcessBlock(nBlock, nMax,  nMin);
 		for (int i = 0; i < 3; i++)
 		{
 			for (int j = 0; j < 4; j++)
 			{
-				nWindow[i][j] = nWindow[i][j + 1];
+				nBlock[i][j] = nBlock[i][j + 1];
 			}
 		}
 		for (int j = 0; j < 4; j++)
 		{
 			nSum[j] = nSum[j + 1];
-			if (m_bWPCEnable == 1)
+			if (m_bWhitePointCEnable == 1)
 			{
 				nMax[j] = nMax[j + 1];
 			}
-			if (m_bBPCEnable == 1)
+			if (m_bBlackPointCEnable == 1)
 			{
 				nMin[j] = nMin[j + 1];
 			}
@@ -91,33 +95,33 @@ void CHDRPlus_DPCorrection::ProcessLine(unsigned short *pInLines[], unsigned sho
 	{
 		for (int i = 0; i < 3; i++)
 		{
-			nWindow[i][4] = nWindow[i][0];
+			nBlock[i][4] = nBlock[i][0];
 			nSum[4] = nSum[0];
-			if (m_bWPCEnable == 1)
+			if (m_bWhitePointCEnable == 1)
 			{
 				nMax[4] = nMax[0];
 			}
-			if (m_bBPCEnable == 1)
+			if (m_bBlackPointCEnable == 1)
 			{
 				nMin[4] = nMin[0];
 			}
 		}
-		*(pOutLine++) = (unsigned short)ProcessWindow(nWindow, nMax, nMin);
+		*(pOutLine++) = (unsigned short)ProcessBlock(nBlock, nMax, nMin);
 		for (int i = 0; i < 3; i++)
 		{
 			for (int j = 0; j < 4; j++)
 			{
-				nWindow[i][j] = nWindow[i][j + 1];
+				nBlock[i][j] = nBlock[i][j + 1];
 			}
 		}
 		for (int j = 0; j < 4; j++)
 		{
 			nSum[j] = nSum[j + 1];
-			if (m_bWPCEnable == 1)
+			if (m_bWhitePointCEnable == 1)
 			{
 				nMax[j] = nMax[j + 1];
 			}
-			if (m_bBPCEnable == 1)
+			if (m_bBlackPointCEnable == 1)
 			{
 				nMin[j] = nMin[j + 1];
 			}
@@ -136,7 +140,7 @@ bool CHDRPlus_DPCorrection::Forward(MultiUshortImage *pInImage, MultiUshortImage
 	}
 	pOutImage->CopyParameters(pInImage);
 	pOutImage->m_nRawBLC = m_nBLC = pControl->nBLC;
-	pOutImage->m_nRawMAXS = m_nMAXS =65535;
+	pOutImage->m_nRawMAXS = m_nMAXS = pControl->nWP;
 	int nProcs = omp_get_num_procs();
 	pBuffer = new unsigned short[nWidth * 5 * nProcs];
 	if (pBuffer == NULL)return false;
