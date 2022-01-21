@@ -1,6 +1,8 @@
 #include "HDRPlus_GammaCorrect.h"
-void CHDRPlus_GammaCorrect::Forward(MultiUshortImage *pRGBImage)
+void CHDRPlus_GammaCorrect::Forward(MultiUshortImage *pRGBImage, TGlobalControl *pControl)
 {
+	m_nMin = pControl->nBLC;
+	m_nMax = pControl->nWP;
 	int nWidth = pRGBImage->GetImageWidth();
 	int nHeight = pRGBImage->GetImageHeight();
 	int cutoff = 200;                   // ceil(0.00304 * UINT16_MAX)
@@ -8,8 +10,8 @@ void CHDRPlus_GammaCorrect::Forward(MultiUshortImage *pRGBImage)
 	float gamma_pow = 0.416667;         // 1 / 2.4
 	float gamma_fac = 680.552897;       // 1.055 * UINT16_MAX ^ (1 - gamma_pow);
 	float gamma_con = -3604.425;        // -0.055 * UINT16_MAX
-	unsigned short GammaTable[65536];
-	for (int k = 0; k < 65536; k++)
+	unsigned short *GammaTable=new unsigned short[m_nMax+1];
+	for (int k = 0; k < m_nMax+1; k++)
 	{
 		long  int tmp;
 		if (k < cutoff)
@@ -20,7 +22,7 @@ void CHDRPlus_GammaCorrect::Forward(MultiUshortImage *pRGBImage)
 		{
 			tmp = gamma_fac * pow(k, gamma_pow) + gamma_con;
 		}
-		GammaTable[k] = CLIP(tmp, 0, 65535);
+		GammaTable[k] = CLIP(tmp, m_nMin, m_nMax);
 	}
 #pragma omp parallel for
 	for (int y = 0; y < nHeight; y++)
@@ -34,4 +36,5 @@ void CHDRPlus_GammaCorrect::Forward(MultiUshortImage *pRGBImage)
 			pRGBLine += 3;
 		}
 	}
+	delete[]GammaTable;
 }

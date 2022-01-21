@@ -26,4 +26,6 @@ void CHDRPlus_BlackWhiteLevel::Forward(MultiUshortImage *pInRawImage, TGlobalCon
 			pRawLine++;
 		}
 	}
+	pControl->nWP = 65535;
+	pControl->nBLC = 0;
 }

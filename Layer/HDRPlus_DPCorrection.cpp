@@ -3,11 +3,11 @@
 获取块里面Max和min，如果中心值Y大于max+thre则Y= max Y+thre<min Y=min 返回Y值作为去除坏点后的值
 像素值在这个块里面要小于等于最大的大于等于最小的
 */
-int CHDRPlus_DPCorrection::ProcessBlock(unsigned int nWindow[][5],unsigned int nMax[5], unsigned int nMin[5])
+int CHDRPlus_DPCorrection::ProcessBlock(unsigned int nBlock[][5],unsigned int nMax[5], unsigned int nMin[5])
 {
 	unsigned int Y, Max, Min;
 	bool bDPC = false;
-	Y = nWindow[1][2];
+	Y = nBlock[1][2];
 	int nWhitePointCThre = m_nWhitePointCThre;
 	int nBlackPointCThre = m_nBlackPointCThre;
 	if (Y >= m_nBLC)
@@ -15,13 +15,13 @@ int CHDRPlus_DPCorrection::ProcessBlock(unsigned int nWindow[][5],unsigned int n
 		nWhitePointCThre += ((Y - m_nBLC)*m_nWhitePointLRatioT) >> 8;
 		nBlackPointCThre += ((Y - m_nBLC)*m_nBlackPointLRatioT) >> 8;
 	}
-	Max = MAX2(MAX2(nMax[0], nMax[4]), MAX2(nWindow[0][2], nWindow[2][2]));
-	Min = MIN2(MIN2(nMin[0], nMin[4]), MIN2(nWindow[0][2], nWindow[2][2]));
+	Max = MAX2(MAX2(nMax[0], nMax[4]), MAX2(nBlock[0][2], nBlock[2][2]));
+	Min = MIN2(MIN2(nMin[0], nMin[4]), MIN2(nBlock[0][2], nBlock[2][2]));
 	if (m_bWhitePointCEnable == 1 && Y > Max + nWhitePointCThre)//nWhitePointCThre越大则进来少去白点少
 	{
 		Y = Max;
 	}
-	if (m_bBlackPointCEnable == 1 && Y + nBlackPointCThre < Min)//nBPCThre越大则进来的少去黑点少
+	if (m_bBlackPointCEnable == 1 && Y + nBlackPointCThre < Min)//nBlackPointCThre越大则进来的少去黑点少
 	{
 		Y = Min;
 	}

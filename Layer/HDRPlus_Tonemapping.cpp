@@ -7,8 +7,8 @@ bool CHDRPlus_Tonemapping::ConvertoGray(MultiUshortImage *pRGBImage, MultiUshort
 	{
 		if (!pGrayImage->CreateImage(nWidth, nHeight, 1, 16))return false;
 	}
-	unsigned short *table = new unsigned short[196605];
-	for (int k = 0; k < 196605; k++)
+	unsigned short *table = new unsigned short[m_nMax*3+1];
+	for (int k = 0; k < m_nMax * 3 + 1; k++)
 	{
 		table[k] = (k + 2) / 3;
 	}
@@ -36,11 +36,11 @@ bool CHDRPlus_Tonemapping::Brighten(MultiUshortImage *pInDarkImage, float gain, 
 	{
 		if (!pOutBrightImage->CreateImage(nWidth, nHeight, 1, 16))return false;
 	}
-	unsigned short table[65536];
-	for (int k = 0; k < 65536; k++)
+	unsigned short *table=new unsigned short[m_nMax+1];
+	for (int k = 0; k < m_nMax+1; k++)
 	{
 		int tmp = k * gain;
-		table[k] = CLIP(tmp, 0, 65535);
+		table[k] = CLIP(tmp, m_nMin, m_nMax);
 	}
 	int tmpWidth = nWidth / 4 * 4;
 #pragma omp parallel for 
@@ -65,6 +65,7 @@ bool CHDRPlus_Tonemapping::Brighten(MultiUshortImage *pInDarkImage, float gain, 
 			pInDarkLine++;
 		}
 	}
+	delete[]table;
 	return true;
 }
 bool CHDRPlus_Tonemapping::GrayGammaCorrect(MultiUshortImage *pInGrayImage, MultiUshortImage *pOutGammaImage)
@@ -80,8 +81,8 @@ bool CHDRPlus_Tonemapping::GrayGammaCorrect(MultiUshortImage *pInGrayImage, Mult
 	float gamma_pow = 0.416667;         // 1 / 2.4
 	float gamma_fac = 680.552897;       // 1.055 * UINT16_MAX ^ (1 - gamma_pow);
 	float gamma_con = -3604.425;        // -0.055 * UINT16_MAX
-	unsigned short table[65536];
-	for (int k = 0; k < 65536; k++)
+	unsigned short *table=new unsigned short[m_nMax+1];
+	for (int k = 0; k < m_nMax+1; k++)
 	{
 		long long int tmp;
 		if (k < cutoff)
@@ -92,7 +93,7 @@ bool CHDRPlus_Tonemapping::GrayGammaCorrect(MultiUshortImage *pInGrayImage, Mult
 		{
 			tmp = gamma_fac * pow(k, gamma_pow) + gamma_con;
 		}
-		table[k] = CLIP(tmp, 0, 65535);
+		table[k] = CLIP(tmp, m_nMin, m_nMax);
 	}
 #pragma omp parallel for
 	for (int y = 0; y < nHeight; y++)
@@ -106,6 +107,7 @@ bool CHDRPlus_Tonemapping::GrayGammaCorrect(MultiUshortImage *pInGrayImage, Mult
 			pInline++;
 		}
 	}
+	delete[]table;
 	return true;
 }
 bool CHDRPlus_Tonemapping::GammaInverse(MultiUshortImage *pInGrayImage, MultiUshortImage *pOutInverseImage)
@@ -121,8 +123,8 @@ bool CHDRPlus_Tonemapping::GammaInverse(MultiUshortImage *pInGrayImage, MultiUsh
 	float gamma_pow = 2.4f;
 	float gamma_fac = 57632.49226f;       // 1 / 1.055 ^ gamma_pow * U_INT16_MAX;
 	float gamma_con = 0.055f;
-	unsigned short table[65536];
-	for (int k = 0; k < 65536; k++)
+	unsigned short *table=new unsigned short[m_nMax+1];
+	for (int k = 0; k < m_nMax+1; k++)
 	{
 		long int tmp;
 		if (k < cutoff)
@@ -131,9 +133,9 @@ bool CHDRPlus_Tonemapping::GammaInverse(MultiUshortImage *pInGrayImage, MultiUsh
 		}
 		else
 		{
-			tmp = (pow((float)k / 65535.f + gamma_con, gamma_pow) * gamma_fac);
+			tmp = (pow((float)k / (float)m_nMax + gamma_con, gamma_pow) * gamma_fac);
 		}
-		table[k] = CLIP(tmp, 0, 65535);
+		table[k] = CLIP(tmp, m_nMin, m_nMax);
 	}
 #pragma omp parallel for 
 	for (int y = 0; y < nHeight; y++)
@@ -147,6 +149,7 @@ bool CHDRPlus_Tonemapping::GammaInverse(MultiUshortImage *pInGrayImage, MultiUsh
 			pInline++;
 		}
 	}
+	delete[]table;
 }
 bool CHDRPlus_Tonemapping::BuildWeight(MultiUshortImage *pDarkGammaImage, MultiUshortImage *pBrightGammaImage, MultiUshortImage *DarkWeightImage, MultiUshortImage *BrightWeightImage, int ScaleBit)
 {
@@ -162,10 +165,10 @@ bool CHDRPlus_Tonemapping::BuildWeight(MultiUshortImage *pDarkGammaImage, MultiU
 	{
 		if (!BrightWeightImage->CreateImage(nWidth, nHeight, nDim, 16))return false;
 	}
-	float WeightTable[65536];
-	for (int k = 0; k < 65536; k++)
+	float *WeightTable=new float[m_nMax+1];
+	for (int k = 0; k < m_nMax+1; k++)
 	{
-		float darks = ((float)k / 65535.f - 0.5f);
+		float darks = ((float)k / (float)m_nMax - 0.5f);
 		WeightTable[k] = exp(-12.5f *(darks*darks));
 	}
 #pragma omp parallel for 
@@ -189,6 +192,7 @@ bool CHDRPlus_Tonemapping::BuildWeight(MultiUshortImage *pDarkGammaImage, MultiU
 			pBrightWeightline++;
 		}
 	}
+	delete[]WeightTable;
 	return true;
 }
 bool CHDRPlus_Tonemapping::CombineDarkAndBrightImage(MultiUshortImage *pDarkGammaImage, MultiUshortImage *pBrightGammaImage, MultiUshortImage *pOutCombineImage)
@@ -255,9 +259,9 @@ void CHDRPlus_Tonemapping::GammaCombinRGB(MultiUshortImage *pRGBImage, MultiUsho
 				R >>= 12;
 				G >>= 12;
 				B >>= 12;
-				pInRGBLine[0] = CLIP(R, 0, 65535);
-				pInRGBLine[1] = CLIP(G, 0, 65535);
-				pInRGBLine[2] = CLIP(B, 0, 65535);
+				pInRGBLine[0] = CLIP(R, m_nMin, m_nMax);
+				pInRGBLine[1] = CLIP(G, m_nMin, m_nMax);
+				pInRGBLine[2] = CLIP(B, m_nMin, m_nMax);
 			}
 			pInRGBLine += 3;
 			pInDarkLine++;
@@ -268,7 +272,6 @@ bool CHDRPlus_Tonemapping::BilateralSmoothYImagenew(MultiUshortImage *pInImage,/
 {
 	int nWidth = pInImage->GetImageWidth();
 	int nHeight = pInImage->GetImageHeight();
-	int nMAXS = 65535;
 	const int nMask[5][5] =
 	{
 		{ 1,  4,  6,  4, 1},
@@ -314,7 +317,7 @@ bool CHDRPlus_Tonemapping::BilateralSmoothYImagenew(MultiUshortImage *pInImage,/
 			tInvNoiseM += (int)(((long long)nInvNoiseM_Mask*M + (long long)nInvNoiseM*(256 - M)) >> 8);
 			tInvNoiseP >>= 3;
 			tInvNoiseM >>= 3;
-			if (Y0 < nMAXS - 4096)
+			if (Y0 < m_nMax - 4096)
 			{
 				for (i = -2; i <= 2; i++)
 				{
@@ -345,7 +348,7 @@ bool CHDRPlus_Tonemapping::BilateralSmoothYImagenew(MultiUshortImage *pInImage,/
 			}
 			else
 			{
-				int tW = nMAXS - Y0;
+				int tW = m_nMax - Y0;
 				if (tW < 0)tW = 0;
 				int TP = (tThreP*tW + 2048) >> 12;
 				int TM = (tThreM*tW + 2048) >> 12;
@@ -411,12 +414,11 @@ bool CHDRPlus_Tonemapping::EstimateDigiGain(MultiUshortImage *pInImage, TGlobalC
 	int nHeight = pInImage->GetImageHeight();
 	double fMean[1], fMeanV;
 	long long int intMean[1], intMeanV;
-	int nMAXS = 65535;
 	int nWinW = nWidth >> 2;
 	int nWinH = nHeight >> 2;
-	unsigned int *pHist = new unsigned int[nMAXS + 1];
+	unsigned int *pHist = new unsigned int[m_nMax + 1];
 	if (pHist == NULL)return false;
-	memset(pHist, 0, sizeof(int)*(nMAXS + 1));
+	memset(pHist, 0, sizeof(int)*(m_nMax + 1));
 	fMean[0]=0;
 	intMean[0]= 0;
 	C[0]= 0;
@@ -456,7 +458,7 @@ bool CHDRPlus_Tonemapping::EstimateDigiGain(MultiUshortImage *pInImage, TGlobalC
 	unsigned int nThre1 = (C[0] * m_nHighLevelPtsPercent[0]) >> 16;//Ratio of histogram between 0 and X
 	unsigned int nThre2 = (C[0] * m_nHighLevelPtsPercent[1]) >> 16;//Ratio of histogram between 0 and X
 	if (nThre2 < nThre1)nThre2 = nThre1;
-	for (y = nMAXS - 1; y > 0; y--)
+	for (y = m_nMax - 1; y > 0; y--)
 	{
 		nPs += pHist[y];
 		if (nPs >= nThre1)
@@ -524,6 +526,8 @@ bool CHDRPlus_Tonemapping::EstimateDigiGain(MultiUshortImage *pInImage, TGlobalC
 }
 bool CHDRPlus_Tonemapping::Forward(MultiUshortImage *pInRGBImage,TGlobalControl *pControl)
 {
+	m_nMin = pControl->nBLC;
+	m_nMax = pControl->nWP;
 	int nGain = pControl->nCameraGain;//nGain x128
 	float Amount;
 	if (m_bAutoAmount)

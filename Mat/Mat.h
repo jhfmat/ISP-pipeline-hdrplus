@@ -637,7 +637,7 @@ public:
 		if (pBuffer == NULL)return false;
 		T *pInLines[3];
 		int loop = 0;
-		#pragma omp parallel for firstprivate(loop) private(pInLines)
+		#pragma omp parallel for num_threads(nProcs) firstprivate(loop) private(pInLines)
 		for (int y = 0; y < m_nHeight ; y++)
 		{
 			if (loop==0)

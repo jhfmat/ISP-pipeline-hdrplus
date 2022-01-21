@@ -128,7 +128,7 @@ bool MultiShortImage::BGRHToBGR(MultiShortImage *pOutBGRImage)
 {
 	int i, x, y, g;
 	if (!pOutBGRImage->CreateImage(m_nWidth, m_nHeight, 3))return false;
-	pOutBGRImage->m_nMAXS = m_nMAXS;
+	pOutBGRImage->m_nMAXS =  m_nMAXS;
 	for (y = 0; y < m_nHeight; y++)
 	{
 		short *pInLine = GetImageLine(y);
@@ -151,6 +151,36 @@ bool MultiShortImage::BGRHToBGR(MultiShortImage *pOutBGRImage)
 	}
 	return true;
 }
+bool MultiShortImage::BGRHToRGB(MultiUshortImage *pOutRGBImage)
+{
+	if (!pOutRGBImage->CreateImage(m_nWidth, m_nHeight, 3,16))return false;
+	pOutRGBImage->m_nRawMAXS = 32767;
+	for (int y = 0; y < m_nHeight; y++)
+	{
+		short *pInLine = GetImageLine(y);
+		unsigned short *pOutLine = pOutRGBImage->GetImageLine(y);
+		for (int x = 0; x < m_nWidth; x++)
+		{
+			unsigned short RGB[3];
+			for (int i = 0; i < 3; i++)
+			{
+				int g = pInLine[i];
+				if (m_nChannel > 3)
+				{
+					g += pInLine[3];
+				}
+				if (g < 0)g = 0;
+				if (g > 32767)g = 32767;
+				RGB[i] = (unsigned short)g;
+			}
+			*(pOutLine++) = RGB[0];
+			*(pOutLine++) = RGB[1];
+			*(pOutLine++) = RGB[2];
+			pInLine += m_nChannel;
+		}
+	}
+	return true;
+}
 bool MultiShortImage::ApplyWeight(MultiUshortImage *pWeightImage, int ScaleBit)
 {
 	int nWidth = GetImageWidth();
@@ -168,10 +198,6 @@ bool MultiShortImage::ApplyWeight(MultiUshortImage *pWeightImage, int ScaleBit)
 				long long int tmpOut = pInLine[0] * pInWeightLine[0];
 				//tmpOut >>= ScaleBit;
 				tmpOut = tmpOut/4096;
-				if (tmpOut> 32767)
-				{
-					printf("%d", tmpOut);
-				}
 				pInLine[0] = CLIP(tmpOut, -32768, 32767);
 				pInLine++;
 				pInWeightLine++;

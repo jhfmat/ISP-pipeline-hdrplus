@@ -16,11 +16,13 @@ protected:
 	}
 public:
 	int m_bDumpFileEnable;
+	int m_nMin;
+	int m_nMax;
 	CHDRPlus_GammaCorrect()
 	{
 		Initialize();
 	}
-	void Forward(MultiUshortImage * pRGBImage);
+	void Forward(MultiUshortImage * pRGBImage, TGlobalControl *pControl);
 };
 
 #endif

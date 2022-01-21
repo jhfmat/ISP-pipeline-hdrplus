@@ -22,6 +22,7 @@ public:
 	bool CreateImage(int width, int height, int bits);
 	bool CreateImage(int width, int height, int dim, int bits);
 	void CopyParameters(MultiUshortImage *pInputImage);
+	bool BGRHToBGR(MultiUshortImage *pOutBGRImage);
 	bool GetBGGRMean(double fMean[]);
 	bool Extend2Image(MultiUshortImage *pInImage, MultiUshortImage *pOutImage, int nS);
 	bool DownScaleImagex2(MultiUshortImage * pOutImage, bool bDitheringEnable);

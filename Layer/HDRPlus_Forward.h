@@ -58,10 +58,10 @@ protected:
 		m_bDumpFileEnable = 1;
 		m_nConfigParamList.ConfigParamListAddVariable("nBlockMatchFusionEnable", &m_nBlockMatchFusionEnable, 0, 1);
 		m_nBlockMatchFusionEnable = 1;
-		m_nConfigParamList.ConfigParamListAddVariable("nBlackWhiteLevelEnable", &m_nBlackWhiteLevelEnable, 0, 1);
-		m_nBlackWhiteLevelEnable = 1;
 		m_nConfigParamList.ConfigParamListAddVariable("nDPCorrectionEnable", &m_nDPCorrectionEnable, 0, 1);
 		m_nDPCorrectionEnable = 1;
+		m_nConfigParamList.ConfigParamListAddVariable("nBlackWhiteLevelEnable", &m_nBlackWhiteLevelEnable, 0, 1);
+		m_nBlackWhiteLevelEnable = 1;
 		m_nConfigParamList.ConfigParamListAddVariable("nWhiteBalanceEnable", &m_nWhiteBalanceEnable, 0, 1);
 		m_nWhiteBalanceEnable = 1;
 		m_nConfigParamList.ConfigParamListAddVariable("nDemosaicingEnable", &m_nDemosaicingEnable, 0, 1);

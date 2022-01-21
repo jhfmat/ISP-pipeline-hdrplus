@@ -1,8 +1,8 @@
 #include "HDRPlus_Forward.h"
 void CHDRPlus_Forward::Forward(MultiUshortImage *InRawImage,MultiUcharImage *OutRGBImage8, TGlobalControl *pControl)
 {
-	const int Framenum = 8;
-	int nFrameID[Framenum];
+	const int Framenum = pControl->nFrameNum;
+	int nFrameID[12];
 	for (int k = 0; k < Framenum; k++)
 	{
 		nFrameID[k] = k;
@@ -47,7 +47,15 @@ void CHDRPlus_Forward::Forward(MultiUshortImage *InRawImage,MultiUcharImage *Out
 	}
 	if (m_nDemosaicingEnable)
 	{
-		m_HDRPlus_Demosaicing.Forward(&OutDpcRaw, &OutRGBImage16, pControl);
+		/*m_HDRPlus_Demosaicing.Forward(&OutDpcRaw, &OutRGBImage16, pControl);
+		if (m_HDRPlus_Demosaicing.m_bDumpFileEnable)
+		{
+			MultiUcharImage tmpOutRGB;
+			m_HDRPlus_Normalize.Forward(&OutRGBImage16, &tmpOutRGB);
+			tmpOutRGB.SaveRGBToBitmapFile("outbmp/Demosaicing.bmp");
+		}*/
+		//////Improved version////////////
+		m_HDRPlus_Demosaicing.Forward2(&OutDpcRaw, &OutRGBImage16, pControl);
 		if (m_HDRPlus_Demosaicing.m_bDumpFileEnable)
 		{
 			MultiUcharImage tmpOutRGB;
@@ -77,7 +85,7 @@ void CHDRPlus_Forward::Forward(MultiUshortImage *InRawImage,MultiUcharImage *Out
 	}
 	if (m_nGammaCorrectEnable)
 	{
-		m_HDRPlus_GammaCorrect.Forward(&OutRGBImage16);
+		m_HDRPlus_GammaCorrect.Forward(&OutRGBImage16, pControl);
 		if (m_HDRPlus_GammaCorrect.m_bDumpFileEnable)
 		{
 			MultiUcharImage tmpOutRGB;
@@ -97,7 +105,7 @@ void CHDRPlus_Forward::Forward(MultiUshortImage *InRawImage,MultiUcharImage *Out
 	}
 	if (m_nContrastEnable)
 	{
-		m_HDRPlus_Contrast.Forward(&OutRGBImage16);
+		m_HDRPlus_Contrast.Forward(&OutRGBImage16, pControl);
 		if (m_HDRPlus_Contrast.m_bDumpFileEnable)
 		{
 			MultiUcharImage tmpOutRGB;

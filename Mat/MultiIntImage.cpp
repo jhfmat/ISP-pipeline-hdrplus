@@ -62,6 +62,37 @@ bool MultIntImage::BGRHToBGR(MultiUcharImage *pOutBGRImage)
 	}
 	return true;
 }
+bool MultIntImage::BGRHToBGR(MultiUshortImage *pOutBGRImage)
+{
+	int nWidth = GetImageWidth();
+	int nHeight = GetImageHeight();
+	int nCh = GetImageDim();
+	if (nCh < 4)return false;
+	if (!pOutBGRImage->CreateImage(nWidth, nHeight,3,16))return false;
+	#pragma omp parallel for
+	for (int y = 0; y < nHeight; y++)
+	{
+		int *pInLine = GetImageLine(y);
+		unsigned short *pOutLine = pOutBGRImage->GetImageLine(y);
+		for (int x = 0; x < nWidth; x++)
+		{
+			int BGRH[4];
+			BGRH[0] = pInLine[0];
+			BGRH[1] = pInLine[1];
+			BGRH[2] = pInLine[2];
+			BGRH[3] = pInLine[3];
+			pInLine += nCh;
+			for (int i = 0; i < 3; i++)
+			{
+				BGRH[i] += BGRH[3];
+				if (BGRH[i] < 0)BGRH[i] = 0;	
+				if (BGRH[i] > m_nMAXS)BGRH[i] = m_nMAXS;
+				*(pOutLine++) = (unsigned short)BGRH[i];
+			}
+		}
+	}
+	return true;
+}
 bool MultIntImage::SaveBGRHToBitmapFile(char *pFileName, int nB, int nG, int nR, int nH)
 {
 	int i, x, y, BGRH[4], E[3];

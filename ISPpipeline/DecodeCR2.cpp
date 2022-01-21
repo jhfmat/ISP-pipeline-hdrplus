@@ -29,22 +29,22 @@
 //	if (cfa_pattern == std::string{ 0, 1, 1, 2 })
 //	{
 //		//printf("RGGB==1\n");
-//		return 1;
+//		return 3;
 //	}
 //	else if (cfa_pattern == std::string{ 1, 0, 2, 1 })
 //	{
 //		//printf("GRBG==0\n");
-//		return 0;
+//		return 2;
 //	}
 //	else if (cfa_pattern == std::string{ 2, 1, 1, 0 })
 //	{
 //		//printf("BGGR==2\n");
-//		return 2;
+//		return 0;
 //	}
 //	else if (cfa_pattern == std::string{ 1, 2, 0, 1 })
 //	{
-//		//printf("BGGR==3\n");
-//		return 3;
+//		//printf("GBRG==3\n");
+//		return 1;
 //	}
 //	return -1;
 //}

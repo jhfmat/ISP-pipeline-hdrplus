@@ -65,6 +65,8 @@ protected:
 	}
 public:
 	int m_bDumpFileEnable;
+	int m_nMin;
+	int m_nMax;
 	int m_nManualAmount;
 	int m_bAutoAmount;
 	int m_nGainOption;

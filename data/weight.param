@@ -53,6 +53,10 @@ bDumpFileEnable=0;	ValueRange=[0,1,1]
 
 CHDRPlus_Demosaicing
 bDumpFileEnable=0;	ValueRange=[0,1,1]
+nDirThre=0;	ValueRange=[0,4095,1]
+bDeleteMinMaxYEnable=1;	ValueRange=[0,1,1]
+nGbGrThre=16;	ValueRange=[0,4095,1]
+nGbGrSlope=64;	ValueRange=[0,1024,1]
 
 CHDRPlus_ChromaDenoise
 bDumpFileEnable=0;	ValueRange=[0,1,1]

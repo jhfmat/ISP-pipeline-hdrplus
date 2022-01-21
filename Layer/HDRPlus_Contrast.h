@@ -20,13 +20,15 @@ protected:
 	}
 public:
 	int m_bDumpFileEnable;
+	int m_nMin;
+	int m_nMax;
 	int m_nBlacklevel;
 	int m_ContrastStrength;
 	CHDRPlus_Contrast()
 	{
 		Initialize();
 	}
-	void Forward(MultiUshortImage * pRGBImage);
+	void Forward(MultiUshortImage * pRGBImage, TGlobalControl *pControl);
 };
 
 #endif

@@ -949,7 +949,7 @@ extern bool DownScaleUcharDatax2(unsigned char *pInData, unsigned char *pOutData
 	unsigned char *pInLine = pInData;
 	unsigned short *pVLines[6];
 	int   loop = 0;
-#pragma omp parallel for firstprivate(loop) private(pVLines)
+#pragma omp parallel for num_threads(nProcs) firstprivate(loop) private(pVLines)
 	for (int y = 0; y < nHeight; y += 2)
 	{
 		unsigned char *pOutLine = pOutData + (y >> 1)*(nWidth >> 1)*nChannel;;
@@ -1103,7 +1103,7 @@ extern bool DownScaleWordDatax2(unsigned short *pInData, unsigned short *pOutDat
 	unsigned short *pInLine = pInData;
 	unsigned int *pVLines[6];
 	int   loop = 0;
-#pragma omp parallel for firstprivate(loop) private(pVLines)
+#pragma omp parallel for num_threads(nProcs) firstprivate(loop) private(pVLines)
 	for (int y = 0; y < nHeight; y += 2)
 	{
 		unsigned short *pOutLine = pOutData + (y >> 1)*(nWidth >> 1)*nChannel;;
@@ -1273,7 +1273,7 @@ extern bool UpScaleUcharDatax2(unsigned char *pInData, unsigned char *pOutData, 
 	}
 	unsigned short *pVLines[2];
 	int loop = 0;
-	#pragma omp parallel for firstprivate(loop) private(pVLines)
+	#pragma omp parallel for num_threads(nProcs) firstprivate(loop) private(pVLines)
 	for (int y = 0; y < nHeight - 1; y++)
 	{
 		unsigned char *pInLine = pInData + (y + 1)*nWidth*nChannel;
@@ -1448,7 +1448,7 @@ extern bool UpScaleWordDatax2(unsigned short *pInData, unsigned short *pOutData,
 	unsigned int *pVLines[2];
 	unsigned short *pInLine = pInData;
 	int   loop = 0;
-#pragma omp parallel for firstprivate(loop) private(pVLines)
+#pragma omp parallel for num_threads(nProcs) firstprivate(loop) private(pVLines)
 	for (int y = 0; y < nHeight; y++)
 	{
 		unsigned short *pOutLine = pOutData + (y << 1)*nPitch;
@@ -1835,7 +1835,7 @@ extern bool RescaleCubicData(unsigned char *pInImage, unsigned char *pOutImage, 
 	}
 	int nProcs = omp_get_num_procs();
 	unsigned char *pBuffer = new unsigned char[((nInWidth + 8) * nChannel + NUM_EXTRA_BYTES)*nProcs];
-#pragma omp parallel for schedule(dynamic, 16)
+#pragma omp parallel for num_threads(nProcs) schedule(dynamic, 16)
 	for (int nOutY = 0; nOutY < nOutHeight; nOutY++)
 	{
 		short pCubicCoefY[4];

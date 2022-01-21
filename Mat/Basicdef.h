@@ -107,6 +107,7 @@ RET CLASS::FUNC##Impl(T0 P0, T1 P1, T2 P2, T3 P3, T4 P4, T5 P5, T6 P6, T7 P7, T8
 //////////////////////end Algorithm optimization definition/////////////////////////
 typedef struct tagGlobalControl
 {
+	int nFrameNum;
 	int nCFAPattern;
 	int nAWBGain[4];
 	int nCameraGain;
@@ -122,6 +123,7 @@ typedef struct tagGlobalControl
 	float nCCM[3][3];
 	tagGlobalControl()
 	{
+		nFrameNum = 1;
 		nCFAPattern = 0;
 		nfaceNum = 0;
 		nAWBGain[0] = nAWBGain[1] = nAWBGain[2] = nAWBGain[3] = 256;

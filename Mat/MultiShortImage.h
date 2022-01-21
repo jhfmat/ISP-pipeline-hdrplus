@@ -25,6 +25,7 @@ public:
 	bool GetEachBlockAverageValue(MultiShortImage *pOutImage, int nRadius);
 	bool BGRHToBGR(MultiUcharImage *pOutBGRImage, bool bAddH=true);
 	bool BGRHToBGR(MultiShortImage *pOutBGRImage);
+	bool BGRHToRGB(MultiUshortImage * pOutRGBImage);
 	bool ApplyWeight(MultiUshortImage * pWeightImage, int ScaleBit);
 	bool AddImage(MultiShortImage * pRefImage);
 	bool SaveSingleChannelToBitmapFile(char *pFileName, int nChannel, int nInScale, int nOutScale, int nOffset);

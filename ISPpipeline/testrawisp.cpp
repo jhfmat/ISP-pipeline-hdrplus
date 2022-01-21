@@ -69,6 +69,7 @@ int main(int argc, char *argv[])
 	tControl.nBLC = m_blc;
 	tControl.nWP = m_Saturate;
 	tControl.nCameraGain = m_nISO * 16 / m_nMinISO;
+	tControl.nFrameNum = m_nFrameNum;
 	tControl.nCFAPattern = m_nCFAPattern;
 	tControl.nAWBGain[0] = m_fRGain * 256;
 	tControl.nAWBGain[1] = m_fGGain * 256;
@@ -81,7 +82,7 @@ int main(int argc, char *argv[])
 			tControl.nCCM[n][m] = m_f[n][m];
 		}
 	}
-	for (int k = 0; k < m_nFrameNum; k++)
+	for (int k = 0; k < tControl.nFrameNum; k++)
 	{
 		printf("%s\n", argv[2 + k]);
 		InRawImage[k].Load16BitRawDataFromBinFile(argv[2+k], m_nWidth, m_nHeight, m_nBits, m_bHighBits, m_bByteOrder, m_nMIPIRAW);

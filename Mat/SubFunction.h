@@ -14,7 +14,7 @@
 #define SWAP3(type,in0,in1,in2) {type pTemp = in0;in0 = in1; in1 = in2; in2 = pTemp;}
 enum RAWTYPE
 {
-	GRBG = 0, RGGB, BGGR, GBRG
+	BGGR=0,GBRG,GRBG,RGGB
 };
 inline int DiffL_Square(int Y0, int Y1)
 {
@@ -52,6 +52,28 @@ inline int DiffW_Square(unsigned short Y0, unsigned short Y1)
 	dY *= dY;
 	if (dY > BITVALUE27)dY = BITVALUE27;
 	return (int)dY;
+}
+__inline int Positive(int value)
+{
+	return (value >= 0) ? (value) : (0);
+}
+/////-thre------0-------+thre//d小于thre范围类的取0范围外的取d-thre
+__inline int SoftThre(int d, int nThre)
+{
+	int flag = 0;
+	if (d < 0)
+	{
+		d = -d;
+		flag = 1;
+	}
+	if (d <= nThre)
+		return 0;
+	else
+	{
+		d -= nThre;
+	}
+	if (flag == 1)return -d;
+	return d;
 }
 template <class T>
 inline T Min3(T In0, T In1, T In2)

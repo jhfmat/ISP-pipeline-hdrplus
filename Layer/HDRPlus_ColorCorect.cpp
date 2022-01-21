@@ -1,6 +1,8 @@
 #include "HDRPlus_ColorCorect.h"
 void CHDRPlus_ColorCorect::Forward(MultiUshortImage *pRGBImage, TGlobalControl *pControl)
 {
+	m_nMin = pControl->nBLC;
+	m_nMax = pControl->nWP;
 	int nWidth = pRGBImage->GetImageWidth();
 	int nHeight = pRGBImage->GetImageHeight();
 	short Sccm[3][3];
@@ -23,9 +25,9 @@ void CHDRPlus_ColorCorect::Forward(MultiUshortImage *pRGBImage, TGlobalControl *
 			R >>= 12;
 			G >>= 12;
 			B >>= 12;
-			pRGBline[0] = CLIP(R, 0, 65535);
-			pRGBline[1] = CLIP(G, 0, 65535);
-			pRGBline[2] = CLIP(B, 0, 65535);
+			pRGBline[0] = CLIP(R, m_nMin, m_nMax);
+			pRGBline[1] = CLIP(G, m_nMin, m_nMax);
+			pRGBline[2] = CLIP(B, m_nMin, m_nMax);
 			pRGBline += 3;
 		}
 	}

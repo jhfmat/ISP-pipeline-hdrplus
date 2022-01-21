@@ -15,14 +15,14 @@ bool MultiUshortImage::CreateImage(int width, int height, int bits)
 {
 	m_nRawBits = bits;
 	m_nRawMAXS = (1 << bits) - 1;
-	m_nRawBLC = (m_nRawMAXS + 1) >> 6;
+	m_nRawBLC = 0;
 	return SetImageSize(width, height, 1);
 }
 bool MultiUshortImage::CreateImage(int width, int height,int dim, int bits)
 {
 	m_nRawBits = bits;
 	m_nRawMAXS = (1 << bits) - 1;
-	m_nRawBLC = (m_nRawMAXS + 1) >> 6;
+	m_nRawBLC = 0;
 	return SetImageSize(width, height, dim);
 }
 bool MultiUshortImage::Clone(MultiUshortImage *pInputImage)
@@ -56,6 +56,33 @@ void MultiUshortImage::CopyParameters(MultiUshortImage *pInputImage)
 		m_nRawAwbGain[i] = pInputImage->m_nRawAwbGain[i];
 	}
 	m_nRawISOGain = pInputImage->m_nRawISOGain;
+}
+bool MultiUshortImage::BGRHToBGR(MultiUshortImage *pOutBGRImage)
+{
+	int i, x, y, g;
+	if (!pOutBGRImage->CreateImage(m_nWidth, m_nHeight, 3))return false;
+	pOutBGRImage->m_nRawMAXS = m_nRawMAXS;
+	for (y = 0; y < m_nHeight; y++)
+	{
+		unsigned short *pInLine = GetImageLine(y);
+		unsigned short *pOutLine = pOutBGRImage->GetImageLine(y);
+		for (x = 0; x < m_nWidth; x++)
+		{
+			for (i = 0; i < 3; i++)
+			{
+				g = pInLine[i];
+				if (m_nChannel > 3)
+				{
+					g += pInLine[3];
+				}
+				if (g < 0)g = 0;
+				if (g > m_nRawMAXS)g = m_nRawMAXS;
+				*(pOutLine++) = (unsigned short)g;
+			}
+			pInLine += m_nChannel;
+		}
+	}
+	return true;
 }
 bool MultiUshortImage::GetBGGRMean(double fMean[])
 {

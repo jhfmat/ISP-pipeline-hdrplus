@@ -31,9 +31,9 @@ bool CHDRPlus_ChromaDenoise::RGBToYUV(MultiUshortImage *pRGBImage, MultiUshortIm
 			/*	pYline[0] = 0.298900f * pRGBline[0] + 0.587000f *pRGBline[1] + 0.114000f * pRGBline[2];
 				pUline[0] = -0.168935f * pRGBline[0] - 0.331655f * pRGBline[1] + 0.500590f * pRGBline[2];
 				pVline[0] = 0.499813f * pRGBline[0] - 0.418531f * pRGBline[1] - 0.081282f * pRGBline[2];*/
-			pYline[0] = CLIP(yuv[0], 0, 65535);
-			pUline[0] = CLIP(yuv[1], 0, 65535);
-			pVline[0] = CLIP(yuv[2], 0, 65535);
+			pYline[0] = CLIP(yuv[0], m_nMin, m_nMax);
+			pUline[0] = CLIP(yuv[1], m_nMin, m_nMax);
+			pVline[0] = CLIP(yuv[2], m_nMin, m_nMax);
 			pYline++;
 			pUline++;
 			pVline++;
@@ -76,7 +76,7 @@ bool CHDRPlus_ChromaDenoise::YUVToRGB(MultiUshortImage *YImage, MultiUshortImage
 			{
 				if (RGB[i] < 0)RGB[i] = 0;
 				RGB[i] >>= 11;
-				if (RGB[i] > 65535)RGB[i] = 65535;
+				if (RGB[i] > m_nMax)RGB[i] = m_nMax;
 				pRGBline[i] = (unsigned short)RGB[i];
 			}
 			pYline++;
@@ -146,6 +146,8 @@ void CHDRPlus_ChromaDenoise::IncreaseSaturation(MultiUshortImage *pUVImage, floa
 }
 bool CHDRPlus_ChromaDenoise::Forward(MultiUshortImage *pRGBImage,TGlobalControl *pControl)
 {
+	m_nMin = pControl->nBLC;
+	m_nMax = pControl->nWP;
 	int nGain = pControl->nCameraGain;//nGain x128
 	float Amount;
 	if (m_bAutoAmount)

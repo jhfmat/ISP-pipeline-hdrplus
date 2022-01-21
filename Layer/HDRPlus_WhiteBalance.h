@@ -16,6 +16,8 @@ protected:
 	}
 public:
 	int m_bDumpFileEnable;
+	int m_nMin;
+	int m_nMax;
 	CHDRPlus_WhiteBalance()
 	{
 		Initialize();

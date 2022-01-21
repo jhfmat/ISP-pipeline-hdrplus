@@ -61,7 +61,7 @@ bool SingleUcharImage::GetHistogram(int nHist[])
 	{
 		nHist[g] = 0;
 	}
-#pragma omp parallel for 
+#pragma omp parallel for num_threads(nProcs)
 	for (int y = 0; y < m_nHeight; y++)
 	{
 		int nThreadId = omp_get_thread_num();
@@ -745,7 +745,7 @@ bool SingleUcharImage::GaussianBlur3x3Image(SingleUcharImage * pOutImage)
 	int nThreads = nProcs;
 	unsigned short *pLines[3];
 	int loop = 0;
-#pragma omp parallel for firstprivate(loop) private(pLines)
+#pragma omp parallel for num_threads(nProcs) firstprivate(loop) private(pLines)
 	for (int y = 0; y < nHeight; y++)
 	{
 		int i;
@@ -797,7 +797,7 @@ bool SingleUcharImage::GaussianBlur5x5Image(SingleUcharImage * pOutImage)
 	int nThreads = nProcs;
 	unsigned short *pLines[5];
 	int loop = 0;
-	#pragma omp parallel for firstprivate(loop) private(pLines) 
+	#pragma omp parallel for num_threads(nProcs) firstprivate(loop) private(pLines) 
 	for (int y = 0; y < nHeight; y++)
 	{
 		int i;
@@ -1129,7 +1129,7 @@ bool SingleUcharImage::ComputeCornernessImage(CImage_FLOAT *pOutImage, float fHa
 	unsigned char *pBuffer = new unsigned char[nWidth * 8 * nProcs];
 	if (pBuffer == NULL)return false;
 	int loop = 0;
-	#pragma omp parallel for   firstprivate(loop) private(pInLines)
+	#pragma omp parallel for  num_threads(nProcs) firstprivate(loop) private(pInLines)
 	for (int y = 0; y < nHeight - 3; y++)
 	{
 		if (loop == 0)

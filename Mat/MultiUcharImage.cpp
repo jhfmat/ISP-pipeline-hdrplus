@@ -381,7 +381,7 @@ bool MultiUcharImage::GaussianBlur3x3Image(MultiUcharImage * pOutImage)
 	int nThreads = nProcs;
 	unsigned short *pLines[3];
 	int loop = 0;
-	#pragma omp parallel for firstprivate(loop) private(pLines) 
+	#pragma omp parallel for num_threads(nProcs) firstprivate(loop) private(pLines) 
 	for (int y = 0; y < nHeight; y++)
 	{
 		int i;
@@ -432,7 +432,7 @@ bool MultiUcharImage::GaussianBlur5x5Image(MultiUcharImage * pOutImage)
 	int nThreads = nProcs;
 	unsigned short *pLines[5];
 	int loop = 0;
-#pragma omp parallel for firstprivate(loop) private(pLines) 
+#pragma omp parallel for num_threads(nProcs) firstprivate(loop) private(pLines) 
 	for (int y = 0; y < nHeight; y++)
 	{
 		int i;
@@ -1473,7 +1473,6 @@ bool MultiUcharImage::SaveBGRToBitmapFile(char *pFileName, bool bVFilp)
 }
 bool MultiUcharImage::SaveRGBToBitmapFile(char *pFileName, bool bVFilp)
 {
-	int i;
 	BITMAPFILEHEADER BmpFileHdr;
 	BITMAPINFO *pInfo;
 	long nBitsSize, nBISize;
@@ -1512,20 +1511,20 @@ bool MultiUcharImage::SaveRGBToBitmapFile(char *pFileName, bool bVFilp)
 		return false;
 	}
 	unsigned char *pBuffer = new unsigned char[nPitch];
-	for (i = 0; i < m_nHeight; i++)
+	for (int y = 0; y < m_nHeight; y++)
 	{
 		unsigned char *pScanLine;
 		if (bVFilp)
-			pScanLine = GetImageLine(m_nHeight - 1 - i);
+			pScanLine = GetImageLine(m_nHeight - 1 - y);
 		else
-			pScanLine = GetImageLine(i);
+			pScanLine = GetImageLine(y);
 		memcpy(pBuffer, pScanLine, m_nWidth * 3 * sizeof(unsigned char));
-		for (int k = 0; k < m_nWidth; k++)
+		for (int x = 0; x < m_nWidth; x++)
 		{
-			unsigned char R = pBuffer[k * 3 + 0];
-			unsigned char B = pBuffer[k * 3 + 2];
-			pBuffer[k * 3 + 0] = B;
-			pBuffer[k * 3 + 2] = R;
+			unsigned char R = pBuffer[x * 3 + 0];
+			unsigned char B = pBuffer[x * 3 + 2];
+			pBuffer[x * 3 + 0] = B;
+			pBuffer[x * 3 + 2] = R;
 		}
 		if (fwrite(pBuffer, 1, nPitch, fp) != (unsigned long)nPitch)
 		{
