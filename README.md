@@ -29,6 +29,7 @@ For detailed code usage, please refer to the example file.
 
 
 ### 4,example for hdrplus
+# 注意事项本算法要求是多帧短曝光raw
 测试图片demo下载链接
 链接：https://pan.baidu.com/s/1PdGphn8Z5f7zKtkReOgmhg 
 提取码：aaaa
