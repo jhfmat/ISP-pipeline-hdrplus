@@ -69,12 +69,12 @@ For detailed code usage, please refer to the example file.
 #### https://github.com/timothybrooks/hdr-plus
 ![hdrplusziplianjie.png](./Picture/hdrplusziplianjie.png)
 ![hdrpluszip.png](./Picture/hdrpluszip.png)
-#### hdrplus测试结果图
-![hdrplusout23ss.png](./Picture/hdrplusout23ss.png)
  
 #### 6,解压001压缩包找到里面output23.png
 ![hdrplusdemooutdir.png](./Picture/hdrplusdemooutdir.png)
  
+#### hdrplus测试结果图
+![hdrplusout23ss.png](./Picture/hdrplusout23ss.png)
 
 #### 7,三张图整体对比
 ![fullcompare.png](./Picture/fullcompare.png)
