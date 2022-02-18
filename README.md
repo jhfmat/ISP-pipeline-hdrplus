@@ -31,7 +31,7 @@ For detailed code usage, please refer to the example file.
 ### 4,example for hdrplus
 # 注意事项本算法要求是多帧短曝光raw
 测试图片demo下载链接
-链接：https://pan.baidu.com/s/1PdGphn8Z5f7zKtkReOgmhg 
+链接：https://pan.baidu.com/s/1Gs8tz1zapDAFcpNJJ0bHeQ 
 提取码：aaaa
 (DecedeCR2.exe文件将.CR2文件解码到.raw文件和生成相关的参数文件.txt,ISPpipeline.exe是一套isp将raw处理到bmp流程)
 ![run23detail.png](./Picture/run23detail.png)
