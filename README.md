@@ -1,7 +1,7 @@
 # Mat
 ### 1,Introduce
-![debug](./Picture/debug.png)
-![ref](./Picture/ref.png)
+![debug](./PictureV1/debug.png)
+![ref](./PictureV1/ref.png)
 
 
 
@@ -13,7 +13,7 @@
 
 
 ### 2,Frame structure
-![framestucture](./Picture/framestucture.png)
+![framestucture](./PictureV1/framestucture.png)
 
 
 
@@ -34,12 +34,12 @@ For detailed code usage, please refer to the example file.
 链接：https://pan.baidu.com/s/1Gs8tz1zapDAFcpNJJ0bHeQ 
 提取码：aaaa
 (DecedeCR2.exe文件将.CR2文件解码到.raw文件和生成相关的参数文件.txt,ISPpipeline.exe是一套isp将raw处理到bmp流程)
-![run23detail.png](./Picture/run23detail.png)
+![run23detail.png](./PictureV1/run23detail.png)
 #### 基于mat hdrplus 框架图
-![ISPpipeline.png](./Picture/ISPpipeline.png)
+![ISPpipeline.png](./PictureV1/ISPpipeline.png)
 
 #### 1,打开网络参数文件
-![weight.param.png](./Picture/weight.param.png)
+![weight.param.png](./PictureV1/weight.param.png)
 
 
 #### 2,关闭isp种核心三个模块
@@ -47,39 +47,39 @@ For detailed code usage, please refer to the example file.
 * nChromaDenoiseEnable=0;	ValueRange=[0,1,1] 去除彩色噪声
 * nTonemappingEnable=0;	ValueRange=[0,1,1] 动态范围压缩
 #### 如图：
-![sampleweight.png](./Picture/sampleweight.png)
+![sampleweight.png](./PictureV1/sampleweight.png)
 
  
 #### 3,运行run23.bat
-![run23.png](./Picture/run23.png)
+![run23.png](./PictureV1/run23.png)
  
 #### Outbmp目录下生成Normalize.bmp如图：
-![basicispss.png](./Picture/basicispss.png)
+![basicispss.png](./PictureV1/basicispss.png)
 
  
 #### 4,打开网络模块开启上述三个模块如图：
-![fullweight.png](./Picture/fullweight.png)
+![fullweight.png](./PictureV1/fullweight.png)
  
 #### 删除outbmp/Normalize.bmp 再次运行run23.bat
 #### outbmp目录下生成Normalize.bmp图如下：
-![myispss.png](./Picture/myispss.png)
+![myispss.png](./PictureV1/myispss.png)
  
 
 #### 5,下载hdrplus里面的demo测试结果图项目链接
 #### https://github.com/timothybrooks/hdr-plus
-![hdrplusziplianjie.png](./Picture/hdrplusziplianjie.png)
-![hdrpluszip.png](./Picture/hdrpluszip.png)
+![hdrplusziplianjie.png](./PictureV1/hdrplusziplianjie.png)
+![hdrpluszip.png](./PictureV1/hdrpluszip.png)
  
 #### 6,解压001压缩包找到里面output23.png
-![hdrplusdemooutdir.png](./Picture/hdrplusdemooutdir.png)
+![hdrplusdemooutdir.png](./PictureV1/hdrplusdemooutdir.png)
  
 #### hdrplus测试结果图
-![hdrplusout23ss.png](./Picture/hdrplusout23ss.png)
+![hdrplusout23ss.png](./PictureV1/hdrplusout23ss.png)
 
 #### 7,三张图整体对比
-![fullcompare.png](./Picture/fullcompare.png)
+![fullcompare.png](./PictureV1/fullcompare.png)
 #### 8,三张细节对比
-![detailcompare.png](./Picture/detailcompare.png)
+![detailcompare.png](./PictureV1/detailcompare.png)
 
 
 
