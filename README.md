@@ -19,7 +19,7 @@
 
 
 
- Here we briefly describe the core class of mat basic image library (parent class mat. H file) 
+ Here we briefly describe the core class of mat basic image library (parent class mat.h file) 
 Subclasses contain (MultIntImage, MultiShortImage, MultiUcharImage, MultiUshortImage, SingleUcharImage, Yuv420Image), They contain various basic image processing algorithms, We can use them to process images such as RAW RGB GRAY YUV.
 For detailed code usage, please refer to the example file.
 ### 3,How to compile a project
