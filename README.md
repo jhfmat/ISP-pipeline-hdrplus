@@ -34,20 +34,20 @@ For detailed code usage, please refer to the example file.
 链接：xxxxxxxxxxxxxxxxxxx
 提取码：aaaa
 #### 基于mat surperlowlight 框架图
-![ISPpipeline.png](./PictureV1/ISPpipeline.png)
+![ISPpipeline.png](./PictureV2/isppipeline.png)
 
 #### 1,常规配置
-![weight.param.png](./PictureV1/weight.param.png)
-#### 如图：
-![sampleweight.png](./PictureV1/sampleweight.png)
+![comom_param.png](./PictureV2/comom_param.png)
+#### 效果图如图：
+![common_isp.png](./PictureV2/common_isp.png)
 
 #### 2,surperlowlight效果配置
-![weight.param.png](./PictureV1/weight.param.png)
-#### 如图：
-![sampleweight.png](./PictureV1/sampleweight.png)
+![superlowlight_param.png](./PictureV2/superlowlight_param.png)
+#### 效果图如图：
+![superlowlight_isp.png](./PictureV2/superlowlight_isp.png)
 
 #### 3,细节对比
-![sampleweight.png](./PictureV1/sampleweight.png)
+![detailcompare.png](./PictureV2/detailcompare.png)
 
 
 # V1.0
