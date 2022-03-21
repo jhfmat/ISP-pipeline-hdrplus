@@ -27,8 +27,8 @@ For detailed code usage, please refer to the example file.
 * Linux platform: We can use g++ to compile(/Linux/ build.cmd)
 * Android platform: We can use ndk to compile(/android/Jni/ build.cmd)
 
-
-### 4,example for hdrplus
+# V1.0
+### 3,example for hdrplus(https://github.com/jhfmat/ISP-pipeline-hdrplus/releases/tag/v1.0)
 # 注意事项本算法要求是多帧短曝光raw
 测试图片demo下载链接
 链接：https://pan.baidu.com/s/1Gs8tz1zapDAFcpNJJ0bHeQ 
