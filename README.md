@@ -27,8 +27,31 @@ For detailed code usage, please refer to the example file.
 * Linux platform: We can use g++ to compile(/Linux/ build.cmd)
 * Android platform: We can use ndk to compile(/android/Jni/ build.cmd)
 
+# V2.0
+### 3,Example for surperlowlight(wait for..)
+# 注意事项本算法要求是多帧ev0和多帧ev-x(详细参考demo教材)
+测试图片demo下载链接
+链接：xxxxxxxxxxxxxxxxxxx
+提取码：aaaa
+#### 基于mat surperlowlight 框架图
+![ISPpipeline.png](./PictureV1/ISPpipeline.png)
+
+#### 1,常规配置
+![weight.param.png](./PictureV1/weight.param.png)
+#### 如图：
+![sampleweight.png](./PictureV1/sampleweight.png)
+
+#### 2,surperlowlight效果配置
+![weight.param.png](./PictureV1/weight.param.png)
+#### 如图：
+![sampleweight.png](./PictureV1/sampleweight.png)
+
+#### 3,细节对比
+![sampleweight.png](./PictureV1/sampleweight.png)
+
+
 # V1.0
-### 3,example for hdrplus(https://github.com/jhfmat/ISP-pipeline-hdrplus/releases/tag/v1.0)
+### 4,Example for hdrplus(https://github.com/jhfmat/ISP-pipeline-hdrplus/releases/tag/v1.0)
 # 注意事项本算法要求是多帧短曝光raw
 测试图片demo下载链接
 链接：https://pan.baidu.com/s/1Gs8tz1zapDAFcpNJJ0bHeQ 
