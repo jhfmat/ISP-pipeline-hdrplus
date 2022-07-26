@@ -93,6 +93,7 @@ bool CHDRPlus_BlockMatchFusion::BoxDownx2(MultiUshortImage *pInImage, MultiUshor
 			unsigned short *pout = pOutImage->GetImageLine(y);
 			int tmplen = nOutWidth / 4 * 4;
 			int x = 0;
+#ifdef USE_NEON
 			for (; x < tmplen; x += 4)
 			{
 				uint32x4_t sum = vpaddlq_u16(vaddq_u16(vld1q_u16(pline0), vld1q_u16(pline1)));
@@ -101,9 +102,10 @@ bool CHDRPlus_BlockMatchFusion::BoxDownx2(MultiUshortImage *pInImage, MultiUshor
 				pline1 += 8;
 				pout += 4;
 			}
+#endif
 			for (; x < nOutWidth; x++)
 			{
-				pout[0] = ((pline0[x] + pline0[x + 1] + pline1[x] + pline1[x + 1]) >> 2);
+				pout[0] = ((pline0[0] + pline0[1] + pline1[0] + pline1[1]) >> 2);
 				pline0 += 2;
 				pline1 += 2;
 				pout += 1;
@@ -123,6 +125,7 @@ bool CHDRPlus_BlockMatchFusion::BoxDownx2(MultiUshortImage *pInImage, MultiUshor
 			unsigned short *pout = pOutImage->GetImageLine(y);
 			int tmplen = nOutWidth / 4 * 4;
 			int x = 0;
+#ifdef USE_NEON
 			for (; x < tmplen; x += 4)
 			{
 				uint32x4_t sum = vpaddlq_u16(vaddq_u16(vld1q_u16(pline0), vld1q_u16(pline1)));
@@ -131,9 +134,10 @@ bool CHDRPlus_BlockMatchFusion::BoxDownx2(MultiUshortImage *pInImage, MultiUshor
 				pline1 += 8;
 				pout += 4;
 			}
+#endif
 			for (; x < nOutWidth; x++)
 			{
-				pout[0] = ((pline0[x] + pline0[x + 1] + pline1[x] + pline1[x + 1]) >> 2);
+				pout[0] = ((pline0[0] + pline0[1] + pline1[0] + pline1[1]) >> 2);
 				pline0 += 2;
 				pline1 += 2;
 				pout += 1;
@@ -183,6 +187,8 @@ bool CHDRPlus_BlockMatchFusion::EstimatedOffsetNoRef(MultiUshortImage *pInRefIma
 			int summ = 0;
 			int sumn = 0;
 			int sumnum = 0;
+			NewOffsetxline[0] = 0;
+			NewOffsetyline[0] = 0;
 			for (int n = -Moveystart; n <= Moveyend; n++)
 			{
 				int debugy = Predebugy + n;
@@ -190,9 +196,10 @@ bool CHDRPlus_BlockMatchFusion::EstimatedOffsetNoRef(MultiUshortImage *pInRefIma
 				{
 					int debugx = Predebugx + m;
 					unsigned int Sad = 0;
-					uint32x4_t nsumabs = vdupq_n_u32(0);
 					unsigned short *pRef = pInRefImage->GetImagePixel(x, y);
 					unsigned short *pDebug = pInDebugImage->GetImagePixel(debugx, debugy);
+#ifdef USE_NEON
+					uint32x4_t nsumabs = vdupq_n_u32(0);
 					if (debugy >= 0 && debugy < NeonBlocksizey && debugx >= 0 && debugx < NeonBlocksizex)
 					{
 						for (int a = 0; a < Blocksize; a++)
@@ -214,21 +221,34 @@ bool CHDRPlus_BlockMatchFusion::EstimatedOffsetNoRef(MultiUshortImage *pInRefIma
 						for (int a = 0; a < Blocksize; a++)
 						{
 							int refy = y + a;
-							int debugy = Predebugy + a;
+							int debugynew = debugy + a;
 							for (int b = 0; b < Blocksize; b++)
 							{
 								int refx = x + b;
-								int debugx = Predebugx + b;
-								Sad += (unsigned int)ABS(pInRefImage->GetImagePixel(refx, refy) - pInDebugImage->GetImagePixel(debugx, debugy));
+								int debugxnew = debugx + b;
+								Sad += (unsigned int)ABS(pInRefImage->GetImagePixel(refx, refy)[0] - pInDebugImage->GetImagePixel(debugxnew, debugynew)[0]);
 							}
 						}
 					}
-					if (Sad < thre)
+#else
+					for (int a = 0; a < Blocksize; a++)
+					{
+						int refy = y + a;
+						int debugynew = debugy + a;
+						for (int b = 0; b < Blocksize; b++)
+						{
+							int refx = x + b;
+							int debugxnew = debugx + b;
+							Sad += (unsigned int)ABS(pInRefImage->GetImagePixel(refx, refy)[0] - pInDebugImage->GetImagePixel(debugxnew, debugynew)[0]);
+						}
+					}
+#endif
+					/*if (Sad < thre)
 					{
 						summ += m;
 						sumn += n;
 						sumnum++;
-					}
+					}*/
 					if (Sad < MinSad)
 					{
 						MinSad = Sad;
@@ -237,13 +257,15 @@ bool CHDRPlus_BlockMatchFusion::EstimatedOffsetNoRef(MultiUshortImage *pInRefIma
 					}
 				}
 			}
-			if (sumnum != 0)
+			/*if (sumnum != 0)
 			{
 				Bestofsetx = summ / sumnum;
 				Bestofsety = sumn / sumnum;
-			}
-			*NewOffsetxline++ = Bestofsetx;
-			*NewOffsetyline++ = Bestofsety;
+			}*/
+			NewOffsetxline[0] = Bestofsetx;
+			NewOffsetyline[0] = Bestofsety;
+			NewOffsetxline++;
+			NewOffsetyline++;
 		}
 	}
 	return true;
@@ -267,10 +289,10 @@ bool CHDRPlus_BlockMatchFusion::EstimatedOffsetAndRef(MultiUshortImage *pInRefIm
 	}
 	int NeonBlocksizex = (nWidth - Blocksize);
 	int NeonBlocksizey = (nHeight - Blocksize);
-	 int Moveystart = nMoveRangey;
-	 int Moveyend = nMoveRangey;
-	 int Movexstart = nMoveRangex;
-	 int Movexend = nMoveRangex;
+	int Moveystart = nMoveRangey;
+	int Moveyend = nMoveRangey;
+	int Movexstart = nMoveRangex;
+	int Movexend = nMoveRangex;
 	int nProcs = omp_get_num_procs();
 #pragma omp parallel for num_threads(nProcs)// schedule(dynamic,16)
 	for (int y = 0; y < nHeight; y += Step)
@@ -288,9 +310,11 @@ bool CHDRPlus_BlockMatchFusion::EstimatedOffsetAndRef(MultiUshortImage *pInRefIm
 			int Predebugy = y + PreOffsety;
 			int Predebugx = x + PreOffsetx;
 			//这三个初始值后面重新规划会影响到动态物体的清晰度
-			short Bestofsetx = PreOffsety;
-			short Bestofsety = PreOffsetx;
+			short Bestofsetx = PreOffsetx;
+			short Bestofsety = PreOffsety;
 			unsigned int MinSad = InitMinSad;//
+			NewOffsetxline[0] = 0;
+			NewOffsetyline[0] = 0;
 			for (int n = -Moveystart; n <= Moveyend; n++)
 			{
 				int debugy = Predebugy + n;
@@ -298,9 +322,10 @@ bool CHDRPlus_BlockMatchFusion::EstimatedOffsetAndRef(MultiUshortImage *pInRefIm
 				{
 					int debugx = Predebugx + m;
 					unsigned int Sad = 0;
-					uint32x4_t nsumabs = vdupq_n_u32(0);
 					unsigned short *pRef = pInRefImage->GetImagePixel(x, y);
 					unsigned short *pDebug = pInDebugImage->GetImagePixel(debugx, debugy);
+#ifdef USE_NEON
+					uint32x4_t nsumabs = vdupq_n_u32(0);
 					if (debugy >= 0 && debugy < NeonBlocksizey && debugx >= 0 && debugx < NeonBlocksizex)
 					{
 						for (int a = 0; a < Blocksize; a++)
@@ -322,15 +347,28 @@ bool CHDRPlus_BlockMatchFusion::EstimatedOffsetAndRef(MultiUshortImage *pInRefIm
 						for (int a = 0; a < Blocksize; a++)
 						{
 							int refy = y + a;
-							int debugy = Predebugy + a;
+							int debugynew = debugy + a;
 							for (int b = 0; b < Blocksize; b++)
 							{
 								int refx = x + b;
-								int debugx = Predebugx + b;
-								Sad += (unsigned int)ABS(pInRefImage->GetImagePixel(refx, refy) - pInDebugImage->GetImagePixel(debugx, debugy));
+								int debugxnew = debugx + b;
+								Sad += (unsigned int)ABS(pInRefImage->GetImagePixel(refx, refy)[0] - pInDebugImage->GetImagePixel(debugxnew, debugynew)[0]);
 							}
 						}
 					}
+#else
+					for (int a = 0; a < Blocksize; a++)
+					{
+						int refy = y + a;
+						int debugynew = debugy + a;
+						for (int b = 0; b < Blocksize; b++)
+						{
+							int refx = x + b;
+							int debugxnew = debugx + b;
+							Sad += (unsigned int)ABS(pInRefImage->GetImagePixel(refx, refy)[0] - pInDebugImage->GetImagePixel(debugxnew, debugynew)[0]);
+						}
+					}
+#endif
 					if (Sad < MinSad)
 					{
 						MinSad = Sad;
@@ -339,8 +377,10 @@ bool CHDRPlus_BlockMatchFusion::EstimatedOffsetAndRef(MultiUshortImage *pInRefIm
 					}
 				}
 			}
-			*NewOffsetxline++ = Bestofsetx + PreOffsetx;
-			*NewOffsetyline++ = Bestofsety + PreOffsety;
+			NewOffsetxline[0] = Bestofsetx + PreOffsetx;
+			NewOffsetyline[0] = Bestofsety + PreOffsety;
+			NewOffsetxline++;
+			NewOffsetyline++;
 		}
 	}
 	return true;
@@ -365,15 +405,28 @@ bool CHDRPlus_BlockMatchFusion::EstimatedWeight(MultiUshortImage *pInImage, int 
 			short *PreOffsetyline = pPreOffsetyImage[k].GetImageLine(Y);
 			float *pOutWeightline = pOutWeightImage[k].GetImageLine(Y);
 			float *pOutTotalWeightline = pOutWeightImage[0].GetImageLine(Y);
+			//unsigned short *pSadAline = pOutSadAImage->GetImageLine(Y);
 			for (int x = 0; x < nWidth; x += Step)
 			{
 				int X = x / Step;
-				int PreOffsetx = *PreOffsetxline++;
-				int PreOffsety = *PreOffsetyline++;
+				int PreOffsetx = 0;
+				int PreOffsety = 0;
+				//unsigned short sada = *pSadAline++;
+				/*if (sada >= m_nSadAThre)
+				{*/
+				PreOffsetx = PreOffsetxline[0];
+				PreOffsety = PreOffsetyline[0];
+				/*}
+				else
+				{
+					PreOffsetxline[0] = 0;
+					PreOffsetyline[0] = 0;
+				}*/
 				int Predebugy = y + PreOffsety;
 				int Predebugx = x + PreOffsetx;
 				float CurrentAvgSad = 0.0f;
 				unsigned int Sad = 0;
+#ifdef USE_NEON
 				if (Predebugy >= 0 && Predebugy < NeonBlocksizey && Predebugx >= 0 && Predebugx < NeonBlocksizex)
 				{
 					uint32x4_t nsumabs = vdupq_n_u32(0);
@@ -398,15 +451,28 @@ bool CHDRPlus_BlockMatchFusion::EstimatedWeight(MultiUshortImage *pInImage, int 
 					for (int a = 0; a < Blocksize; a++)
 					{
 						int refy = y + a;
-						int debugy = Predebugy + a;
+						int debugynew = Predebugy + a;
 						for (int b = 0; b < Blocksize; b++)
 						{
 							int refx = x + b;
-							int debugx = Predebugx + b;
-							Sad += (unsigned int)ABS(pInImage[0].GetImagePixel(refx, refy) - pInImage[k].GetImagePixel(Predebugx, Predebugy));
+							int debugxnew = Predebugx + b;
+							Sad += (unsigned int)ABS(pInImage[0].GetImagePixel(refx, refy)[0] - pInImage[k].GetImagePixel(debugxnew, debugynew)[0]);
 						}
 					}
 				}
+#else
+				for (int a = 0; a < Blocksize; a++)
+				{
+					int refy = y + a;
+					int debugynew = Predebugy + a;
+					for (int b = 0; b < Blocksize; b++)
+					{
+						int refx = x + b;
+						int debugxnew = Predebugx + b;
+						Sad += (unsigned int)ABS(pInImage[0].GetImagePixel(refx, refy)[0] - pInImage[k].GetImagePixel(debugxnew, debugynew)[0]);
+					}
+				}
+#endif
 				Sad = Sad >> 8;//Sad / (float)Blocksize2
 				CurrentAvgSad = (float)Sad;
 				float NormDist = MAX2(1.0f, (float)(CurrentAvgSad - m_nMinDist) / (float)m_nAmountFactor);
@@ -419,6 +485,8 @@ bool CHDRPlus_BlockMatchFusion::EstimatedWeight(MultiUshortImage *pInImage, int 
 					pOutWeightline[X] = 1.f / NormDist;
 				}
 				pOutTotalWeightline[X] += pOutWeightline[X];
+				PreOffsetxline++;
+				PreOffsetyline++;
 			}
 		}
 	}
