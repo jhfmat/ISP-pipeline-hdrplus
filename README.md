@@ -1,6 +1,8 @@
 
 # QQ技术讨论群464087747
 
+# 详解v1.0测试使用以及各个模块详细教程加群主私聊
+
 # Mat
 ### 1,Introduce
 ![debug](./PictureV1/debug.png)
