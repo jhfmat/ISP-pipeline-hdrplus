@@ -3,6 +3,7 @@ void CHDRPlus_BlackWhiteLevel::Forward(MultiUshortImage *pInRawImage, TGlobalCon
 {
 	int nWidth = pInRawImage->GetImageWidth();
 	int nHeight = pInRawImage->GetImageHeight();
+	pControl->nWP = pInRawImage->GetMaxVal();
 	float white_factor = 65535.f / (float)(pControl->nWP - pControl->nBLC);
 	unsigned short table[65536];
 	for (int k = 0; k < 65536; k++)
