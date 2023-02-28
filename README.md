@@ -94,7 +94,7 @@ For detailed code usage, please refer to the example file.
 #### outbmp目录下生成Normalize.bmp图如下：
 ![myispss.png](./PictureV1/myispss.png)
  
-
+# -------------------------对比谷歌hdrplus-------------------------------
 #### 5,下载hdrplus里面的demo测试结果图项目链接
 #### https://github.com/timothybrooks/hdr-plus
 ![hdrplusziplianjie.png](./PictureV1/hdrplusziplianjie.png)
