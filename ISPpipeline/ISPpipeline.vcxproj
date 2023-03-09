@@ -145,7 +145,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>Layer.lib;BasicMem.lib;turbojpeg-static.lib;jpeg-static.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Mat.lib;Layer.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(OutDir);$(SolutionDir)ISPpipeline\opencvx86lib\debug;$(SolutionDir)\windowrun\ncnn-20210525-windows-vs2017-shared\x64\lib</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
