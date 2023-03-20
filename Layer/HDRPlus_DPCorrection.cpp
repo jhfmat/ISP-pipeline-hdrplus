@@ -1,8 +1,4 @@
 #include "HDRPlus_DPCorrection.h"
-/*
-»ñÈ¡¿éÀïÃæMaxºÍmin£¬Èç¹ûÖĞĞÄÖµY´óÓÚmax+threÔòY= max Y+thre<min Y=min ·µ»ØYÖµ×÷ÎªÈ¥³ı»µµãºóµÄÖµ
-ÏñËØÖµÔÚÕâ¸ö¿éÀïÃæÒªĞ¡ÓÚµÈÓÚ×î´óµÄ´óÓÚµÈÓÚ×îĞ¡µÄ
-*/
 int CHDRPlus_DPCorrection::ProcessBlock(unsigned int nBlock[][5],unsigned int nMax[5], unsigned int nMin[5])
 {
 	unsigned int Y, Max, Min;
@@ -17,11 +13,11 @@ int CHDRPlus_DPCorrection::ProcessBlock(unsigned int nBlock[][5],unsigned int nM
 	}
 	Max = MAX2(MAX2(nMax[0], nMax[4]), MAX2(nBlock[0][2], nBlock[2][2]));
 	Min = MIN2(MIN2(nMin[0], nMin[4]), MIN2(nBlock[0][2], nBlock[2][2]));
-	if (m_bWhitePointCEnable == 1 && Y > Max + nWhitePointCThre)//nWhitePointCThreÔ½´óÔò½øÀ´ÉÙÈ¥°×µãÉÙ
+	if (m_bWhitePointCEnable == 1 && Y > Max + nWhitePointCThre)//nWhitePointCThreè¶Šå¤§åˆ™è¿›æ¥å°‘å»ç™½ç‚¹å°‘
 	{
 		Y = Max;
 	}
-	if (m_bBlackPointCEnable == 1 && Y + nBlackPointCThre < Min)//nBlackPointCThreÔ½´óÔò½øÀ´µÄÉÙÈ¥ºÚµãÉÙ
+	if (m_bBlackPointCEnable == 1 && Y + nBlackPointCThre < Min)//nBlackPointCThreè¶Šå¤§åˆ™è¿›æ¥çš„å°‘å»é»‘ç‚¹å°‘
 	{
 		Y = Min;
 	}
@@ -31,7 +27,6 @@ void CHDRPlus_DPCorrection::ProcessLine(unsigned short *pInLines[], unsigned sho
 {
 	unsigned short *pIn[3];
 	unsigned int nBlock[3][5];
-	unsigned int nSum[5];
 	unsigned int nMax[5];
 	unsigned int nMin[5];
 	for (int i = 0; i < 3; i++)
@@ -44,7 +39,6 @@ void CHDRPlus_DPCorrection::ProcessLine(unsigned short *pInLines[], unsigned sho
 	}
 	for (int i = 0; i < 4; i++)
 	{
-		nSum[i] = nBlock[0][i] + nBlock[1][i] + nBlock[2][i];
 		if (m_bWhitePointCEnable == 1)
 		{
 			nMax[i] = MAX2(nBlock[0][i], MAX2(nBlock[1][i], nBlock[2][i]));
@@ -60,7 +54,6 @@ void CHDRPlus_DPCorrection::ProcessLine(unsigned short *pInLines[], unsigned sho
 		for (int i = 0; i < 3; i++)
 		{
 			nBlock[i][4] = *(pIn[i]++);
-			nSum[4] = nBlock[0][4] + nBlock[1][4] + nBlock[2][4];
 			if (m_bWhitePointCEnable == 1)
 			{
 				nMax[4] = MAX2(nBlock[0][4], MAX2(nBlock[1][4], nBlock[2][4]));
@@ -80,7 +73,6 @@ void CHDRPlus_DPCorrection::ProcessLine(unsigned short *pInLines[], unsigned sho
 		}
 		for (int j = 0; j < 4; j++)
 		{
-			nSum[j] = nSum[j + 1];
 			if (m_bWhitePointCEnable == 1)
 			{
 				nMax[j] = nMax[j + 1];
@@ -96,7 +88,6 @@ void CHDRPlus_DPCorrection::ProcessLine(unsigned short *pInLines[], unsigned sho
 		for (int i = 0; i < 3; i++)
 		{
 			nBlock[i][4] = nBlock[i][0];
-			nSum[4] = nSum[0];
 			if (m_bWhitePointCEnable == 1)
 			{
 				nMax[4] = nMax[0];
@@ -116,7 +107,6 @@ void CHDRPlus_DPCorrection::ProcessLine(unsigned short *pInLines[], unsigned sho
 		}
 		for (int j = 0; j < 4; j++)
 		{
-			nSum[j] = nSum[j + 1];
 			if (m_bWhitePointCEnable == 1)
 			{
 				nMax[j] = nMax[j + 1];
