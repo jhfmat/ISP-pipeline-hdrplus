@@ -174,6 +174,192 @@ bool CHDRPlus_Demosaicing::Forward(MultiUshortImage *pInRAWImage, MultiUshortIma
 	}
 	return true;
 }
+void CHDRPlus_Demosaicing::RAWToYUVH(unsigned short BlockRaw[5][5], int nCFA, int HVYUVH[6], int bYFlag, int bXFlag, int bHGreenFlag, int bVGreenFlag)
+{
+	int i, HYUVH[4], VYUVH[4];
+	//int bHGreenFlag = (nCFA & 1) ^ bYFlag;
+	//int bVGreenFlag = bXFlag ^ bYFlag;
+	unsigned short VRAW[5];
+	int pHGC[5][2];
+	int pVGC[5][2];
+	//行方向计算//R-G 或B-G
+	Bayer2GC(BlockRaw[0], pHGC[0], bHGreenFlag);
+	Bayer2GC(BlockRaw[1], pHGC[1], bHGreenFlag ^ 1);
+	Bayer2GC(BlockRaw[2], pHGC[2], bHGreenFlag);
+	Bayer2GC(BlockRaw[3], pHGC[3], bHGreenFlag ^ 1);
+	Bayer2GC(BlockRaw[4], pHGC[4], bHGreenFlag);
+	//列方向计算//R-G 或B-G
+	VRAW[0] = BlockRaw[0][0];
+	VRAW[1] = BlockRaw[1][0];
+	VRAW[2] = BlockRaw[2][0];
+	VRAW[3] = BlockRaw[3][0];
+	VRAW[4] = BlockRaw[4][0];
+	Bayer2GC(VRAW, pVGC[0], bVGreenFlag);
+	VRAW[0] = BlockRaw[0][1];
+	VRAW[1] = BlockRaw[1][1];
+	VRAW[2] = BlockRaw[2][1];
+	VRAW[3] = BlockRaw[3][1];
+	VRAW[4] = BlockRaw[4][1];
+	Bayer2GC(VRAW, pVGC[1], bVGreenFlag ^ 1);
+	VRAW[0] = BlockRaw[0][2];
+	VRAW[1] = BlockRaw[1][2];
+	VRAW[2] = BlockRaw[2][2];
+	VRAW[3] = BlockRaw[3][2];
+	VRAW[4] = BlockRaw[4][2];
+	Bayer2GC(VRAW, pVGC[2], bVGreenFlag);
+	VRAW[0] = BlockRaw[0][3];
+	VRAW[1] = BlockRaw[1][3];
+	VRAW[2] = BlockRaw[2][3];
+	VRAW[3] = BlockRaw[3][3];
+	VRAW[4] = BlockRaw[4][3];
+	Bayer2GC(VRAW, pVGC[3], bVGreenFlag ^ 1);
+	VRAW[0] = BlockRaw[0][4];
+	VRAW[1] = BlockRaw[1][4];
+	VRAW[2] = BlockRaw[2][4];
+	VRAW[3] = BlockRaw[3][4];
+	VRAW[4] = BlockRaw[4][4];
+	Bayer2GC(VRAW, pVGC[4], bVGreenFlag);
+
+	GCFilter51(pHGC, HYUVH, bYFlag);
+	GCFilter51(pVGC, VYUVH, bXFlag);
+	/////////////////////
+	HVYUVH[0] = (HYUVH[0] + VYUVH[0]) / 2;
+	HVYUVH[1] = (HYUVH[1] + VYUVH[1]) / 2 + 32768;
+	HVYUVH[2] = HYUVH[2] + 32768;
+	HVYUVH[3] = VYUVH[2] + 32768;
+	HVYUVH[4] = (HYUVH[0] + HYUVH[3] - HVYUVH[0]) + 32768;
+	HVYUVH[5] = (VYUVH[0] + VYUVH[3] - HVYUVH[0]) + 32768;
+	if (HVYUVH[0] < 0)HVYUVH[0] = 0;	if (HVYUVH[0] > m_nMax)HVYUVH[0] = m_nMax;
+	for (i = 1; i < 6; i++)
+	{
+		if (HVYUVH[i] < 0)HVYUVH[i] = 0;	if (HVYUVH[i] > 65535)HVYUVH[i] = 65535;
+	}
+}
+bool CHDRPlus_Demosaicing::RawToHVYUVHImage(MultiUshortImage* pInImage, MultiUshortImage* pOutImage)
+{
+	int nWidth = pInImage->GetImageWidth();
+	int nHeight = pInImage->GetImageHeight();
+	if (!pOutImage->SetImageSize(nWidth, nHeight, 6))return false;
+	int bYFlag = (m_nCFAPattern >> 1) & 1;
+	const int WIN = 5;
+	const int WINSub_1 = (WIN - 1);
+	const int WINcenter = (WIN / 2);
+	unsigned short rawPixel;
+	int HVYUVH[6] = { 0,0,0,0,0,0 };
+	unsigned short BlockRaw[WIN][WIN];
+	unsigned short lineBuf[WINSub_1][6000];
+	for (int n = 0; n < WIN; n++)
+	{
+		for (int m = 0; m < WIN; m++)
+		{
+			BlockRaw[n][m] = 0;
+		}
+	}
+	for (int n = 0; n < WINSub_1; n++)
+	{
+		for (int m = 0; m < 6000; m++)
+		{
+			lineBuf[n][m] = 0;
+		}
+	}
+	unsigned short* pRaw = pInImage->GetImageData();
+	unsigned short* pOutYUVH = pOutImage->GetImageData();
+	for (int y = 0; y < nHeight; y++)
+	{
+		int bHGreenFlag = (m_nCFAPattern & 1) ^ bYFlag;
+		int bXFlag = (m_nCFAPattern & 1);
+		for (int x = 0; x < nWidth; x++)
+		{
+			int bVGreenFlag = bXFlag ^ bYFlag;
+			rawPixel = (int)(*pRaw++);
+			for (int k = 0; k < WIN; k++)
+			{
+				for (int l = 0; l < WINSub_1; l++)
+				{
+					BlockRaw[k][l] = BlockRaw[k][l + 1];
+				}
+			}
+			for (int k = 0; k < WINSub_1; k++)//最后一列赋值
+			{
+				BlockRaw[k][WINSub_1] = lineBuf[k][x];
+			}
+			BlockRaw[WINSub_1][WINSub_1] = rawPixel;
+			for (int k = 0; k < WINSub_1; k++)
+			{
+				lineBuf[k][x] = BlockRaw[k + 1][WINSub_1];
+			}
+			if ((y > WINcenter + 1) && (x > WINcenter + 1))
+			{
+				RAWToYUVH(BlockRaw, m_nCFAPattern, HVYUVH, bYFlag, bXFlag, bHGreenFlag, bVGreenFlag);
+			}
+			else
+			{
+				RAWToYUVH(BlockRaw, m_nCFAPattern, HVYUVH, bYFlag, bXFlag, bHGreenFlag, bVGreenFlag);
+			}
+			if ((y > WINcenter) || ((y == WINcenter) && (x > WINcenter - 1)))
+			{
+				pOutYUVH[0] = ((unsigned short)HVYUVH[0]);
+				pOutYUVH[1] = ((unsigned short)HVYUVH[1]);
+				pOutYUVH[2] = ((unsigned short)HVYUVH[2]);
+				pOutYUVH[3] = ((unsigned short)HVYUVH[3]);
+				pOutYUVH[4] = ((unsigned short)HVYUVH[4]);
+				pOutYUVH[5] = ((unsigned short)HVYUVH[5]);
+				pOutYUVH += 6;
+			}
+			bHGreenFlag ^= 1;
+			bXFlag ^= 1;
+		}
+		bYFlag ^= 1;
+	}
+	for (int x = 0; x < WINcenter; x++)
+	{
+		pOutYUVH[0] = ((unsigned short)HVYUVH[0]);
+		pOutYUVH[1] = ((unsigned short)HVYUVH[1]);
+		pOutYUVH[2] = ((unsigned short)HVYUVH[2]);
+		pOutYUVH[3] = ((unsigned short)HVYUVH[3]);
+		pOutYUVH[4] = ((unsigned short)HVYUVH[4]);
+		pOutYUVH[5] = ((unsigned short)HVYUVH[5]);
+		pOutYUVH += 6;
+	}
+	for (int y = 0; y < WINcenter; y++)
+	{
+		int bHGreenFlag = (m_nCFAPattern & 1) ^ bYFlag;
+		int bXFlag = (m_nCFAPattern & 1);
+		for (int x = 0; x < nWidth; x++)
+		{
+			int bVGreenFlag = bXFlag ^ bYFlag;
+			for (int k = 0; k < WIN; k++)
+			{
+				for (int l = 0; l < WINSub_1; l++)
+				{
+					BlockRaw[k][l] = BlockRaw[k][l + 1];
+				}
+			}
+			for (int k = 0; k < WINSub_1; k++)//最后一列赋值
+			{
+				BlockRaw[k][WINSub_1] = lineBuf[k][x];
+			}
+			//BlockRaw[WINSub_1][WINSub_1] = rawPixel;
+			for (int k = 0; k < WINSub_1; k++)
+			{
+				lineBuf[k][x] = BlockRaw[k + 1][WINSub_1];
+			}
+			RAWToYUVH(BlockRaw, m_nCFAPattern, HVYUVH, bYFlag, bXFlag, bHGreenFlag, bVGreenFlag);
+			pOutYUVH[0] = ((unsigned short)HVYUVH[0]);
+			pOutYUVH[1] = ((unsigned short)HVYUVH[1]);
+			pOutYUVH[2] = ((unsigned short)HVYUVH[2]);
+			pOutYUVH[3] = ((unsigned short)HVYUVH[3]);
+			pOutYUVH[4] = ((unsigned short)HVYUVH[4]);
+			pOutYUVH[5] = ((unsigned short)HVYUVH[5]);
+			pOutYUVH += 6;
+			bHGreenFlag ^= 1;
+			bXFlag ^= 1;
+		}
+		bYFlag ^= 1;
+	}
+	return true;
+}
+
 bool CHDRPlus_Demosaicing::Forward2(MultiUshortImage *pInRAWImage, MultiUshortImage *pOutRGBImage, TGlobalControl *pControl)
 {
 	MultiUshortImage HVYUVHImage;
@@ -181,7 +367,7 @@ bool CHDRPlus_Demosaicing::Forward2(MultiUshortImage *pInRAWImage, MultiUshortIm
 	MultiShortImage DirImage;
 	MultiUshortImage YUVImage;
 	m_nCFAPattern =  pControl->nCFAPattern;
-	m_nMax =  pControl->nWP;
+	m_nMax = (1 << pControl->nBit) - 1;
 	m_nMin = pControl->nBLC;
 	if (!RawToHVYUVHImage(pInRAWImage, &HVYUVHImage))return false;
 	if (!HVYUVHToHV3x3Image(&HVYUVHImage, &HVImage))return false;
@@ -195,295 +381,133 @@ bool CHDRPlus_Demosaicing::Forward2(MultiUshortImage *pInRAWImage, MultiUshortIm
 	if (!YUVToRGBImage(&YUVImage, pOutRGBImage))return false;
 	return true;
 }
-void CHDRPlus_Demosaicing::HRawToHVYUVHLine(unsigned short *pInLine, int *pHGCLine, int nWidth, int bYFlag)
-{
-	int i, x, CFA[5], tC;
-	int bGreenFlag = (m_nCFAPattern & 1) ^ bYFlag;
-	CFA[0] = CFA[2] = *(pInLine++);
-	CFA[1] = CFA[3] = *(pInLine++);
-	int *pGC = pHGCLine;
-	for (x = 0; x < nWidth - 2; x++, bGreenFlag ^= 1)
-	{
-		CFA[4] = *(pInLine++);
-		Raw2GC(CFA, pGC, bGreenFlag);
-		pGC += 10;
-		for (i = 0; i < 4; i++)
-		{
-			CFA[i] = CFA[i + 1];
-		}
-	}
-	for (; x < nWidth; x++, bGreenFlag ^= 1)
-	{
-		CFA[4] = CFA[2];
-		Raw2GC(CFA, pGC, bGreenFlag);
-		pGC += 10;
-	}
-}
-void CHDRPlus_Demosaicing::VRawToHVYUVHLine(unsigned short *pRawLines[], int *pHGCLines[], unsigned short *pOutLine, int nWidth, int bYFlag)
-{
-	int i, x, CFA[5], nVGCBuf[10], HYUVH[4], VYUVH[4], HVYUVH[6];
-	int bXFlag = (m_nCFAPattern & 1);
-	int bGreenFlag = bXFlag ^ bYFlag;
-	unsigned short *pRaw[5];
-	int *pHGC[5];
-	int *pVGC[5];
-	pVGC[0] = pVGC[2] = nVGCBuf;
-	pVGC[1] = pVGC[3] = pVGC[2] + 2;
-	pVGC[4] = pVGC[3] + 2;
-	for (i = 0; i < 5; i++)
-	{
-		pHGC[i] = pHGCLines[i];
-		pRaw[i] = pRawLines[i];
-		CFA[i] = *(pRaw[i]++);
-	}
-	Raw2GC(CFA, pVGC[2], bGreenFlag);
-	for (i = 0; i < 5; i++)
-	{
-		CFA[i] = *(pRaw[i]++);
-	}
-	Raw2GC(CFA, pVGC[3], bGreenFlag ^ 1);
-	for (x = 0; x < 2; x++, bXFlag ^= 1)
-	{
-		for (i = 0; i < 5; i++)
-		{
-			CFA[i] = *(pRaw[i]++);
-		}
-		Raw2GC(CFA, pVGC[4], (bXFlag^bYFlag));
-		GCFilter5(pHGC, HYUVH, bYFlag);
-		for (i = 0; i < 5; i++)
-		{
-			pHGC[i] += 10;
-		}
-		GCFilter5(pVGC, VYUVH, bXFlag);
-		HVYUVH[0] = (HYUVH[0] + VYUVH[0]) / 2;
-		HVYUVH[1] = (HYUVH[1] + VYUVH[1]) / 2 + 32768;
-		HVYUVH[2] = HYUVH[2] + 32768;
-		HVYUVH[3] = VYUVH[2] + 32768;
-		HVYUVH[4] = (HYUVH[0] + HYUVH[3] - HVYUVH[0]) + 32768;
-		HVYUVH[5] = (VYUVH[0] + VYUVH[3] - HVYUVH[0]) + 32768;
-		if (HVYUVH[0] < 0)HVYUVH[0] = 0;	if (HVYUVH[0] > m_nMax)HVYUVH[0] = m_nMax;
-		*(pOutLine++) = (unsigned short)HVYUVH[0];
-		for (i = 1; i < 6; i++)
-		{
-			if (HVYUVH[i] < 0)HVYUVH[i] = 0;	if (HVYUVH[i] > 65535)HVYUVH[i] = 65535;
-			*(pOutLine++) = (unsigned short)HVYUVH[i];
-		}
-		for (i = 0; i < 4; i++)
-		{
-			pVGC[i] = pVGC[i + 1];
-		}
-		pVGC[4] += 2;
-	}
-	for (; x < nWidth - 2; x++, bXFlag ^= 1)
-	{
-		for (i = 0; i < 5; i++)
-		{
-			CFA[i] = *(pRaw[i]++);
-		}
-		Raw2GC(CFA, pVGC[4], (bXFlag^bYFlag));
-		GCFilter5(pHGC, HYUVH, bYFlag);
-		for (i = 0; i < 5; i++)
-		{
-			pHGC[i] += 10;
-		}
-		GCFilter5(pVGC, VYUVH, bXFlag);
-		HVYUVH[0] = (HYUVH[0] + VYUVH[0]) / 2;
-		HVYUVH[1] = (HYUVH[1] + VYUVH[1]) / 2 + 32768;
-		HVYUVH[2] = HYUVH[2] + 32768;
-		HVYUVH[3] = VYUVH[2] + 32768;
-		HVYUVH[4] = (HYUVH[0] + HYUVH[3] - HVYUVH[0]) + 32768;
-		HVYUVH[5] = (VYUVH[0] + VYUVH[3] - HVYUVH[0]) + 32768;
-		if (HVYUVH[0] < 0)HVYUVH[0] = 0;	if (HVYUVH[0] > m_nMax)HVYUVH[0] = m_nMax;
-		*(pOutLine++) = (unsigned short)HVYUVH[0];
-		for (i = 1; i < 6; i++)
-		{
-			if (HVYUVH[i] < 0)HVYUVH[i] = 0;	if (HVYUVH[i] > 65535)HVYUVH[i] = 65535;
-			*(pOutLine++) = (unsigned short)HVYUVH[i];
-		}
-		int *pTemp = pVGC[0];
-		for (i = 0; i < 4; i++)
-		{
-			pVGC[i] = pVGC[i + 1];
-		}
-		pVGC[4] = pTemp;
-	}
-	for (; x < nWidth; x++, bXFlag ^= 1)
-	{
-		pVGC[4] = pVGC[2];
-		GCFilter5(pHGC, HYUVH, bYFlag);
-		for (i = 0; i < 5; i++)
-		{
-			pHGC[i] += 10;
-		}
-		GCFilter5(pVGC, VYUVH, bXFlag);
-		HVYUVH[0] = (HYUVH[0] + VYUVH[0]) / 2;
-		HVYUVH[1] = (HYUVH[1] + VYUVH[1]) / 2 + 32768;
-		HVYUVH[2] = HYUVH[2] + 32768;
-		HVYUVH[3] = VYUVH[2] + 32768;
-		HVYUVH[4] = (HYUVH[0] + HYUVH[3] - HVYUVH[0]) + 32768;
-		HVYUVH[5] = (VYUVH[0] + VYUVH[3] - HVYUVH[0]) + 32768;
-		if (HVYUVH[0] < 0)HVYUVH[0] = 0;	if (HVYUVH[0] > m_nMax)HVYUVH[0] = m_nMax;
-		*(pOutLine++) = (unsigned short)HVYUVH[0];
-		for (i = 1; i < 6; i++)
-		{
-			if (HVYUVH[i] < 0)HVYUVH[i] = 0;	if (HVYUVH[i] > 65535)HVYUVH[i] = 65535;
-			*(pOutLine++) = (unsigned short)HVYUVH[i];
-		}
-		for (i = 0; i < 4; i++)
-		{
-			pVGC[i] = pVGC[i + 1];
-		}
-	}
-}
-bool CHDRPlus_Demosaicing::RawToHVYUVHImage(MultiUshortImage *pInImage, MultiUshortImage *pOutImage)
-{
-	int nWidth = pInImage->GetImageWidth();
-	int nHeight = pInImage->GetImageHeight();
-	if (!pOutImage->SetImageSize(nWidth, nHeight,6))return false;
-	int *pHGCLines[5];
-	unsigned short *pRawLines[5];
-	int nProcs = omp_get_num_procs();
-	int *pHGCBuffer = new int[nWidth * 2 * 5* nProcs];
-	if (pHGCBuffer == NULL)return false;
-	int loop = 0;
-	#pragma omp parallel for  num_threads(nProcs) firstprivate(loop) private(pHGCLines,pRawLines)
-	for (int y=0; y < nHeight; y++)
-	{
-		int bYFlag = (m_nCFAPattern >> 1) & 1;
-		if (y%2!=0)
-		{
-			bYFlag ^= 1;
-		}
-		if (loop == 0)
-		{
-			int nThreadId = omp_get_thread_num();
-			for (int i = 0; i < 5; i++)
-			{
-				pHGCLines[i] = pHGCBuffer + 2 * i + nWidth * 2 * 5 * nThreadId;
-			}
-			pRawLines[0] = pInImage->GetImageLine(y - 2);
-			pRawLines[1] = pInImage->GetImageLine(y - 1);
-			pRawLines[2] = pInImage->GetImageLine(y + 0);
-			pRawLines[3] = pInImage->GetImageLine(y + 1);
-			HRawToHVYUVHLine(pInImage->GetImageLine(y - 2), pHGCLines[0], nWidth, bYFlag);
-			HRawToHVYUVHLine(pInImage->GetImageLine(y - 1), pHGCLines[1], nWidth, bYFlag ^ 1);
-			HRawToHVYUVHLine(pInImage->GetImageLine(y + 0), pHGCLines[2], nWidth, bYFlag);
-			HRawToHVYUVHLine(pInImage->GetImageLine(y + 1), pHGCLines[3], nWidth, bYFlag ^ 1);
-			loop++;
-		}
-		pRawLines[4] = pInImage->GetImageLine(y + 2);
-		HRawToHVYUVHLine(pInImage->GetImageLine(y + 2), pHGCLines[4], nWidth, bYFlag);
-		VRawToHVYUVHLine(pRawLines, pHGCLines, pOutImage->GetImageLine(y), nWidth, bYFlag);
-		int *pTemp = pHGCLines[0];
-		for (int i = 0; i < 4; i++)
-		{
-			pRawLines[i] = pRawLines[i + 1];
-			pHGCLines[i] = pHGCLines[i + 1];
-		}
-		pHGCLines[4] = pTemp;
-	}
-	delete[] pHGCBuffer;
-	return true;
-}
-void CHDRPlus_Demosaicing::HVYUVHToHVBlock(int nOut[], int nHVBlock[3][3][4], int nVDVBuf[3], int nVDHBuf[3])
-{
-	int i, nHDVBuf[3], nHDHBuf[3];
-	nVDVBuf[2] = Positive(DIFF(nHVBlock[0][2][1], nHVBlock[2][2][1]) - DIFF(nHVBlock[0][2][0], nHVBlock[2][2][0]));
-	nVDHBuf[2] = Positive(DIFF(nHVBlock[0][2][3], nHVBlock[2][2][3]) - DIFF(nHVBlock[0][2][2], nHVBlock[2][2][2]));
-	for (i = 0; i < 3; i++)
-	{
-		nHDVBuf[i] = Positive(DIFF(nHVBlock[i][0][0], nHVBlock[i][2][0]) - DIFF(nHVBlock[i][0][1], nHVBlock[i][2][1]));
-		nHDHBuf[i] = Positive(DIFF(nHVBlock[i][0][2], nHVBlock[i][2][2]) - DIFF(nHVBlock[i][0][3], nHVBlock[i][2][3]));
-	}
-	nOut[0] = (nVDVBuf[0] + nVDVBuf[1] * 2 + nVDVBuf[2]);	//HW0=VDV
-	nOut[0] += (nVDHBuf[0] + nVDHBuf[1] * 2 + nVDHBuf[2]) >> 1; //HW1=VDH
-	nOut[1] = (nHDVBuf[0] + nHDVBuf[1] * 2 + nHDVBuf[2]);	//VW0=VDV
-	nOut[1] += (nHDHBuf[0] + nHDHBuf[1] * 2 + nHDHBuf[2]) >> 1; //VW1=VDH
-	nVDVBuf[0] = nVDVBuf[1];
-	nVDHBuf[0] = nVDHBuf[1];
-	nVDVBuf[1] = nVDVBuf[2];
-	nVDHBuf[1] = nVDHBuf[2];
-}
-void CHDRPlus_Demosaicing::HVYUVHToHVLine(unsigned short *pInLines[], unsigned int *pOutLine, int nWidth)
-{
-	int i, k, x, HV[2];
-	int nHVBlock[3][3][4];
-	int nVDVBuf[3];
-	int nVDHBuf[3];
-	unsigned short *pIn[3];
-	for (i = 0; i < 3; i++)
-	{
-		pIn[i] = pInLines[i];
-		for (k = 0; k < 4; k++)
-		{
-			nHVBlock[i][1][k] = pIn[i][k + 2];
-		}
-		pIn[i] += 6;
-		for (k = 0; k < 4; k++)
-		{
-			nHVBlock[i][0][k] = pIn[i][k + 2];
-		}
-	}
-	for (int i = 0; i < 2; i++)
-	{
-		nVDVBuf[i] = Positive(DIFF(nHVBlock[0][i][1], nHVBlock[2][i][1]) - DIFF(nHVBlock[0][i][0], nHVBlock[2][i][0]));
-		nVDHBuf[i] = Positive(DIFF(nHVBlock[0][i][3], nHVBlock[2][i][3]) - DIFF(nHVBlock[0][i][2], nHVBlock[2][i][2]));
-	}
-	for (x = 0; x < nWidth - 1; x++)
-	{
-		for (i = 0; i < 3; i++)
-		{
-			for (k = 0; k < 4; k++)
-			{
-				nHVBlock[i][2][k] = pIn[i][k + 2];
-			}
-			pIn[i] += 6;
-		}
-		HVYUVHToHVBlock(HV, nHVBlock, nVDVBuf, nVDHBuf);
-		*(pOutLine++) = (unsigned int)HV[0];
-		*(pOutLine++) = (unsigned int)HV[1];
-		for (i = 0; i < 3; i++)
-		{
-			for (k = 0; k < 4; k++)
-			{
-				nHVBlock[i][0][k] = nHVBlock[i][1][k];
-				nHVBlock[i][1][k] = nHVBlock[i][2][k];
-			}
-		}
-	}
-	{
-		for (i = 0; i < 3; i++)
-		{
-			for (k = 0; k < 4; k++)
-			{
-				nHVBlock[i][2][k] = nHVBlock[i][0][k];
-			}
-		}
-		HVYUVHToHVBlock(HV, nHVBlock, nVDVBuf, nVDHBuf);
-		*(pOutLine++) = (unsigned int)HV[0];
-		*(pOutLine++) = (unsigned int)HV[1];
-	}
-}
-bool CHDRPlus_Demosaicing::HVYUVHToHV3x3Image(MultiUshortImage *pInImage, CImageData_UINT32 *pOutImage)
+bool CHDRPlus_Demosaicing::HVYUVHToHV3x3Image(MultiUshortImage* pInImage, CImageData_UINT32* pOutImage)
 {
 	int nWidth = pInImage->GetImageWidth();
 	int nHeight = pInImage->GetImageHeight();
 	if (!pOutImage->SetImageSize(nWidth, nHeight, 2))return false;
-	unsigned short *pHLines[3];
-	int loop =0;
-	#pragma omp parallel for  firstprivate(loop) private(pHLines)
+	const int WIN = 3;
+	const int WINSub_1 = (WIN - 1);
+	const int WINcenter = (WIN / 2);
+	int InYU[2], InHVE[4], OUTHV[2];
+	unsigned short BlockA[WIN][WIN];
+	unsigned short BlockB[WIN][WIN];
+	unsigned short BlockC[WIN][WIN];
+	unsigned short BlockD[WIN][WIN];
+	unsigned short lineBufA[WINSub_1][6000];
+	unsigned short lineBufB[WINSub_1][6000];
+	unsigned short lineBufC[WINSub_1][6000];
+	unsigned short lineBufD[WINSub_1][6000];
+	int nVDVBuf[3];
+	int nVDHBuf[3];
+	int nHDVBuf[3];
+	int nHDHBuf[3];
+	for (int n = 0; n < WIN; n++)
+	{
+		for (int m = 0; m < WIN; m++)
+		{
+			BlockA[n][m] = 0;
+			BlockB[n][m] = 0;
+			BlockC[n][m] = 0;
+			BlockD[n][m] = 0;
+		}
+	}
+	for (int n = 0; n < WINSub_1; n++)
+	{
+		for (int m = 0; m < 6000; m++)
+		{
+			lineBufA[n][m] = 0;
+			lineBufB[n][m] = 0;
+			lineBufC[n][m] = 0;
+			lineBufD[n][m] = 0;
+		}
+	}
+	unsigned short* pInData = pInImage->GetImageData();
+	unsigned int* pOutData = pOutImage->GetImageData();
 	for (int y = 0; y < nHeight; y++)
 	{
-		if (loop == 0)
+		for (int x = 0; x < nWidth; x++)
 		{
-			pHLines[0] = pInImage->GetImageLine(y - 1);
-			pHLines[1] = pInImage->GetImageLine(y);
-			loop++;
+			InYU[0] = pInData[0];
+			InYU[1] = pInData[0];
+			InHVE[0] = pInData[0];
+			InHVE[1] = pInData[0];
+			InHVE[2] = pInData[0];
+			InHVE[3] = pInData[0];
+			pInData += 6;
+			for (int k = 0; k < WIN; k++)
+			{
+				for (int l = 0; l < WINSub_1; l++)
+				{
+					BlockA[k][l] = BlockA[k][l + 1];
+					BlockB[k][l] = BlockB[k][l + 1];
+					BlockC[k][l] = BlockC[k][l + 1];
+					BlockD[k][l] = BlockD[k][l + 1];
+				}
+			}
+			for (int k = 0; k < WINSub_1; k++)//最后一列赋值
+			{
+				BlockA[k][WINSub_1] = lineBufA[k][x];
+				BlockB[k][WINSub_1] = lineBufB[k][x];
+				BlockC[k][WINSub_1] = lineBufC[k][x];
+				BlockD[k][WINSub_1] = lineBufD[k][x];
+			}
+			BlockA[WINSub_1][WINSub_1] = InHVE[0];
+			BlockB[WINSub_1][WINSub_1] = InHVE[1];
+			BlockC[WINSub_1][WINSub_1] = InHVE[2];
+			BlockD[WINSub_1][WINSub_1] = InHVE[3];
+			for (int k = 0; k < WINSub_1 - 1; k++)
+			{
+				lineBufA[k][x] = lineBufA[k + 1][x];
+				lineBufB[k][x] = lineBufB[k + 1][x];
+				lineBufC[k][x] = lineBufC[k + 1][x];
+				lineBufD[k][x] = lineBufD[k + 1][x];
+			}
+			lineBufA[WINSub_1 - 1][x] = InHVE[0];
+			lineBufB[WINSub_1 - 1][x] = InHVE[1];
+			lineBufC[WINSub_1 - 1][x] = InHVE[2];
+			lineBufD[WINSub_1 - 1][x] = InHVE[3];
+			if ((y > WINcenter + 1) && (x > WINcenter + 1))
+			{
+				//主方向
+				nVDVBuf[0] = Pos(DIFF(BlockA[0][0], BlockA[2][0]) - DIFF(BlockB[0][0], BlockB[2][0]));
+				nVDVBuf[1] = Pos(DIFF(BlockA[0][1], BlockA[2][1]) - DIFF(BlockB[0][1], BlockB[2][1]));
+				nVDVBuf[2] = Pos(DIFF(BlockA[0][2], BlockA[2][2]) - DIFF(BlockB[0][2], BlockB[2][2]));
+				//次方向
+				nVDHBuf[0] = Pos(DIFF(BlockC[0][0], BlockC[2][0]) - DIFF(BlockD[0][0], BlockD[2][0]));
+				nVDHBuf[1] = Pos(DIFF(BlockC[0][1], BlockC[2][1]) - DIFF(BlockD[0][1], BlockD[2][1]));
+				nVDHBuf[2] = Pos(DIFF(BlockC[0][2], BlockC[2][2]) - DIFF(BlockD[0][2], BlockD[2][2]));
+				//主方向
+				nHDVBuf[0] = Pos(DIFF(BlockA[0][0], BlockA[0][2]) - DIFF(BlockB[0][0], BlockB[0][2]));
+				nHDVBuf[1] = Pos(DIFF(BlockA[1][0], BlockA[1][2]) - DIFF(BlockB[1][0], BlockB[1][2]));
+				nHDVBuf[2] = Pos(DIFF(BlockA[2][0], BlockA[2][2]) - DIFF(BlockB[2][0], BlockB[2][2]));
+				//次方向
+				nHDHBuf[0] = Pos(DIFF(BlockC[0][0], BlockC[0][2]) - DIFF(BlockD[0][0], BlockD[0][2]));
+				nHDHBuf[1] = Pos(DIFF(BlockC[1][0], BlockC[1][2]) - DIFF(BlockD[1][0], BlockD[1][2]));
+				nHDHBuf[2] = Pos(DIFF(BlockC[2][0], BlockC[2][2]) - DIFF(BlockD[2][0], BlockD[2][2]));
+
+
+				OUTHV[0] = (nVDVBuf[0] + nVDVBuf[1] * 2 + nVDVBuf[2]);	//HW0=VDV 主方向
+				OUTHV[0] += (nVDHBuf[0] + nVDHBuf[1] * 2 + nVDHBuf[2]) >> 1; //HW1=VDH 次方向
+				OUTHV[1] = (nHDVBuf[0] + nHDVBuf[1] * 2 + nHDVBuf[2]);	//VW0=VDV 主方向
+				OUTHV[1] += (nHDHBuf[0] + nHDHBuf[1] * 2 + nHDHBuf[2]) >> 1; //VW1=VDH 次方向
+			}
+			else
+			{
+				OUTHV[0] = 0;
+				OUTHV[1] = 0;
+			}
+			if ((y > WINcenter) || ((y == WINcenter) && (x > WINcenter - 1)))
+			{
+				pOutData[0] = OUTHV[0];
+				pOutData[1] = OUTHV[1];
+			}
 		}
-		pHLines[2] = pInImage->GetImageLine(y+1);
-		HVYUVHToHVLine(pHLines, pOutImage->GetImageLine(y), nWidth);
-		pHLines[0] = pHLines[1];
-		pHLines[1] = pHLines[2];
+	}
+	for (int cnt = 0; cnt < WINcenter * nWidth + WINcenter; cnt++)
+	{
+		pOutData[0] = OUTHV[0];
+		pOutData[1] = OUTHV[0];
 	}
 	return true;
 }
