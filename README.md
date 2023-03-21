@@ -34,28 +34,6 @@ For detailed code usage, please refer to the example file.
 * Linux platform: We can use g++ to compile(待更新)
 * Android platform: We can use ndk to compile(待更新)
 
-# ---------------------------V2.0-----------------------------
-### 3,Example for surperlowlight(wait for..)
-# 注意事项本算法要求是多帧ev0和多帧ev-x(详细参考demo教材)
-#### 测试图片demo下载链接：https://pan.baidu.com/s/1EWJfSL-iD62dzy0qodP7ww 
-#### 提取码：aaaa
-#### 标定工具下载：待更新xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-#### 提取码：aaaa
-#### 基于mat surperlowlight 框架图
-![ISPpipeline.png](./PictureV2/isppipeline.png)
-
-#### 1,常规配置
-![comom_param.png](./PictureV2/comom_param.png)
-#### 效果图如图：
-![common_isp.png](./PictureV2/common_isp.png)
-
-#### 2,surperlowlight效果配置
-![superlowlight_param.png](./PictureV2/superlowlight_param.png)
-#### 效果图如图：
-![superlowlight_isp.png](./PictureV2/superlowlight_isp.png)
-
-#### 3,细节对比
-![detailcompare.png](./PictureV2/detailcompare.png)
 
 
 # ---------------------------V1.0-----------------------------
