@@ -105,7 +105,7 @@ bool CHDRPlus_BlockMatchFusion::BoxDownx2(MultiUshortImage *pInImage, MultiUshor
 #endif
 			for (; x < nOutWidth; x++)
 			{
-				pout[0] = ((pline0[0] + pline0[1] + pline1[0] + pline1[1]) >> 2);
+				pout[0] = ((pline0[0] + pline0[1] + pline1[0] + pline1[1]+2) >> 2);
 				pline0 += 2;
 				pline1 += 2;
 				pout += 1;
@@ -137,7 +137,7 @@ bool CHDRPlus_BlockMatchFusion::BoxDownx2(MultiUshortImage *pInImage, MultiUshor
 #endif
 			for (; x < nOutWidth; x++)
 			{
-				pout[0] = ((pline0[0] + pline0[1] + pline1[0] + pline1[1]) >> 2);
+				pout[0] = ((pline0[0] + pline0[1] + pline1[0] + pline1[1]+2) >> 2);
 				pline0 += 2;
 				pline1 += 2;
 				pout += 1;
@@ -226,7 +226,8 @@ bool CHDRPlus_BlockMatchFusion::EstimatedOffsetNoRef(MultiUshortImage *pInRefIma
 							{
 								int refx = x + b;
 								int debugxnew = debugx + b;
-								Sad += (unsigned int)ABS(pInRefImage->GetImagePixel(refx, refy)[0] - pInDebugImage->GetImagePixel(debugxnew, debugynew)[0]);
+								int Dif = (int)(pInRefImage->GetImagePixel(refx, refy)[0] - pInDebugImage->GetImagePixel(debugxnew, debugynew)[0]);
+								Sad += (unsigned int)ABS(Dif);
 							}
 						}
 					}
@@ -309,7 +310,7 @@ bool CHDRPlus_BlockMatchFusion::EstimatedOffsetAndRef(MultiUshortImage *pInRefIm
 			int PreOffsety = *PreOffsetyline++;
 			int Predebugy = y + PreOffsety;
 			int Predebugx = x + PreOffsetx;
-			//’‚»˝∏ˆ≥ı º÷µ∫Û√Ê÷ÿ–¬πÊªÆª·”∞œÏµΩ∂ØÃ¨ŒÔÃÂµƒ«ÂŒ˙∂»
+			//Ëøô‰∏â‰∏™ÂàùÂßãÂÄºÂêéÈù¢ÈáçÊñ∞ËßÑÂàí‰ºöÂΩ±ÂìçÂà∞Âä®ÊÄÅÁâ©‰ΩìÁöÑÊ∏ÖÊô∞Â∫¶
 			short Bestofsetx = PreOffsetx;
 			short Bestofsety = PreOffsety;
 			unsigned int MinSad = InitMinSad;//
@@ -352,7 +353,8 @@ bool CHDRPlus_BlockMatchFusion::EstimatedOffsetAndRef(MultiUshortImage *pInRefIm
 							{
 								int refx = x + b;
 								int debugxnew = debugx + b;
-								Sad += (unsigned int)ABS(pInRefImage->GetImagePixel(refx, refy)[0] - pInDebugImage->GetImagePixel(debugxnew, debugynew)[0]);
+								int Dif = (int)(pInRefImage->GetImagePixel(refx, refy)[0] - pInDebugImage->GetImagePixel(debugxnew, debugynew)[0]);
+								Sad += (unsigned int)ABS(Dif);
 							}
 						}
 					}
@@ -456,7 +458,8 @@ bool CHDRPlus_BlockMatchFusion::EstimatedWeight(MultiUshortImage *pInImage, int 
 						{
 							int refx = x + b;
 							int debugxnew = Predebugx + b;
-							Sad += (unsigned int)ABS(pInImage[0].GetImagePixel(refx, refy)[0] - pInImage[k].GetImagePixel(debugxnew, debugynew)[0]);
+							int Dif = (int)(pInImage[0].GetImagePixel(refx, refy)[0] - pInImage[k].GetImagePixel(debugxnew, debugynew)[0]);
+							Sad += (unsigned int)ABS(Dif);
 						}
 					}
 				}
@@ -521,13 +524,13 @@ void CHDRPlus_BlockMatchFusion::MergeTemporal(MultiUshortImage *pRawPadImage, in
 				int Newx = 0;
 				if (k == 0)
 				{
-					weiget = (unsigned short)((float)SCALEVALUE / (*pTotalWeight++));//∑≈¥Û2µƒ14¥Œ∑Ω
+					weiget = (unsigned short)((float)SCALEVALUE / (*pTotalWeight++));//ÊîæÂ§ß2ÁöÑ14Ê¨°Êñπ
 					Newy = y;
 					Newx = x;
 				}
 				else
 				{
-					weiget = (unsigned short)((float)SCALEVALUE * (*pWeightline++) / (*pTotalWeight++));//∑≈¥Û2µƒ14¥Œ∑Ω
+					weiget = (unsigned short)((float)SCALEVALUE * (*pWeightline++) / (*pTotalWeight++));//ÊîæÂ§ß2ÁöÑ14Ê¨°Êñπ
 					Newy = y + (*PreOffsetyline++) * 2;
 					Newx = x + (*PreOffsetxline++) * 2;
 				}
@@ -547,7 +550,7 @@ void CHDRPlus_BlockMatchFusion::MergeTemporal(MultiUshortImage *pRawPadImage, in
 				}
 				else
 				{
-					for (short a = 0; a < Blocksize; a++)
+					for (int a = 0; a < Blocksize; a++)
 					{
 						if (Newx <= NeonBlocksizex && Newx >= 0)
 						{
@@ -565,7 +568,7 @@ void CHDRPlus_BlockMatchFusion::MergeTemporal(MultiUshortImage *pRawPadImage, in
 							unsigned short *pRawDataline = pRawPadImage[k].GetImageLine(Newy + a);
 							for (int b = 0; b < Blocksize; b++)
 							{
-								(*pMergeline++) += weiget * pRawDataline[Newx + b];
+								(*pMergeline++) += (unsigned int)(weiget * pRawDataline[Newx + b]);
 							}
 						}
 					}
@@ -629,7 +632,7 @@ void CHDRPlus_BlockMatchFusion::MergeWeight(MultiUshortImage *pOutMergeSingleIma
 		}
 	}
 }
-bool CHDRPlus_BlockMatchFusion::UpScaleOffsetAndValuex2(MultiShortImage *pInImage, MultiShortImage *pOutImage)//–° ¥Û
+bool CHDRPlus_BlockMatchFusion::UpScaleOffsetAndValuex2(MultiShortImage *pInImage, MultiShortImage *pOutImage)//Â∞è Â§ß
 {
 	int nWidth = pInImage->GetImageWidth();
 	int nHeight = pInImage->GetImageHeight();
@@ -639,23 +642,23 @@ bool CHDRPlus_BlockMatchFusion::UpScaleOffsetAndValuex2(MultiShortImage *pInImag
 	{
 		if (!pOutImage->CreateImageFillValue(tnx2, tny2, 1, 0))return false;
 	}
-	int ofx = tnx2 * 2 - nWidth;
+	/*int ofx = tnx2 * 2 - nWidth;
 	int ofy = tny2 * 2 - nHeight;
 	int tmptny2 = tny2;
-	int tmptnx2 = tnx2;
-	if (ofx != 0 || ofy != 0)
-	{
-		tmptny2 = tmptny2 - 1;
-		tmptnx2 = tmptnx2 - 1;
-	}
+	int tmptnx2 = tnx2;*/
+	//if (ofx != 0 || ofy != 0)
+	//{
+	//	tmptny2 = tmptny2 - 1;
+	//	tmptnx2 = tmptnx2 - 1;
+	//}
 	int nProcs = omp_get_num_procs();
 #pragma omp parallel for num_threads(nProcs) schedule(dynamic,16)
-	for (int y = 0; y < tmptny2; y++)
+	for (int y = 0; y < nHeight; y++)
 	{
 		short *pline0 = pOutImage->GetImageLine(y * 2);
 		short *pline1 = pOutImage->GetImageLine(y * 2 + 1);
 		short *pin = pInImage->GetImageLine(y);
-		for (int x = 0; x < tmptnx2; x++)
+		for (int x = 0; x < nWidth; x++)
 		{
 			short tmp = (*pin++);
 			tmp = tmp * 2;
@@ -682,7 +685,7 @@ void CHDRPlus_BlockMatchFusion::Forward(MultiUshortImage *pInImages, int nFrameI
 		}
 		else
 		{
-			nGain = pControl->nEQGain;//lenshading÷Æ∫Ûµƒ
+			nGain = pControl->nEQGain;//lenshading‰πãÂêéÁöÑ
 		}
 		if (nGain < m_nGainList[0])
 		{
@@ -717,7 +720,7 @@ void CHDRPlus_BlockMatchFusion::Forward(MultiUshortImage *pInImages, int nFrameI
 	{
 		pInraw[k] = pInImages[nFrameID[k]].GetImageData();
 	}
-	//◊Ó¥Û÷ß≥÷10÷° ‰»Î
+	//ÊúÄÂ§ßÊîØÊåÅ10Â∏ßËæìÂÖ•
 	/////swap first frame and last frame////
 	int div = 128;
 	/*unsigned short *ptmpraw = pInraw[0];
@@ -745,14 +748,14 @@ void CHDRPlus_BlockMatchFusion::Forward(MultiUshortImage *pInImages, int nFrameI
 	CImageData_UINT32 SumblockMergedata;
 	for (int k = 0; k < Framenum; k++)
 	{
-		BoxDownx2(&RawPadImage[k], &RawDatax2[k]);
+		/*BoxDownx2(&RawPadImage[k], &RawDatax2[k]);
 		RawDatax2[k].DownScaleImagex2(&RawDatax4[k], false);
 		RawDatax4[k].DownScaleImagex2(&RawDatax8[k], false);
-		RawDatax8[k].DownScaleImagex2(&RawDatax16[k], false);
-		/*BoxDownx2(&RawPadImage[k], &RawDatax2[k]);
+		RawDatax8[k].DownScaleImagex2(&RawDatax16[k], false);*/
+		BoxDownx2(&RawPadImage[k], &RawDatax2[k]);
 		BoxDownx2(&RawDatax2[k], &RawDatax4[k]);
 		BoxDownx2(&RawDatax4[k], &RawDatax8[k]);
-		BoxDownx2(&RawDatax8[k], &RawDatax16[k]);*/
+		BoxDownx2(&RawDatax8[k], &RawDatax16[k]);
 	}
 	for (int k = 1; k < Framenum; k++)
 	{
