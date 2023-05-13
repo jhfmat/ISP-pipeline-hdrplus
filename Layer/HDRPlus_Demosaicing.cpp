@@ -279,7 +279,7 @@ bool CHDRPlus_Demosaicing::RawToHVYUVHImage(MultiUshortImage* pInImage, MultiUsh
 					BlockRaw[k][l] = BlockRaw[k][l + 1];
 				}
 			}
-			for (int k = 0; k < WINSub_1; k++)//最后一列赋值
+			for (int k = 0; k < WINSub_1; k++)
 			{
 				BlockRaw[k][WINSub_1] = lineBuf[k][x];
 			}
@@ -335,7 +335,7 @@ bool CHDRPlus_Demosaicing::RawToHVYUVHImage(MultiUshortImage* pInImage, MultiUsh
 					BlockRaw[k][l] = BlockRaw[k][l + 1];
 				}
 			}
-			for (int k = 0; k < WINSub_1; k++)//最后一列赋值
+			for (int k = 0; k < WINSub_1; k++)
 			{
 				BlockRaw[k][WINSub_1] = lineBuf[k][x];
 			}
@@ -445,7 +445,7 @@ bool CHDRPlus_Demosaicing::HVYUVHToHV3x3Image(MultiUshortImage* pInImage, CImage
 					BlockD[k][l] = BlockD[k][l + 1];
 				}
 			}
-			for (int k = 0; k < WINSub_1; k++)//最后一列赋值
+			for (int k = 0; k < WINSub_1; k++)
 			{
 				BlockA[k][WINSub_1] = lineBufA[k][x];
 				BlockB[k][WINSub_1] = lineBufB[k][x];
@@ -487,10 +487,10 @@ bool CHDRPlus_Demosaicing::HVYUVHToHV3x3Image(MultiUshortImage* pInImage, CImage
 				nHDHBuf[2] = Pos(DIFF(BlockC[2][0], BlockC[2][2]) - DIFF(BlockD[2][0], BlockD[2][2]));
 
 
-				OUTHV[0] = (nVDVBuf[0] + nVDVBuf[1] * 2 + nVDVBuf[2]);	//HW0=VDV 主方向
-				OUTHV[0] += (nVDHBuf[0] + nVDHBuf[1] * 2 + nVDHBuf[2]) >> 1; //HW1=VDH 次方向
-				OUTHV[1] = (nHDVBuf[0] + nHDVBuf[1] * 2 + nHDVBuf[2]);	//VW0=VDV 主方向
-				OUTHV[1] += (nHDHBuf[0] + nHDHBuf[1] * 2 + nHDHBuf[2]) >> 1; //VW1=VDH 次方向
+				OUTHV[0] = (nVDVBuf[0] + nVDVBuf[1] * 2 + nVDVBuf[2]);
+				OUTHV[0] += (nVDHBuf[0] + nVDHBuf[1] * 2 + nVDHBuf[2]) >> 1;
+				OUTHV[1] = (nHDVBuf[0] + nHDVBuf[1] * 2 + nHDVBuf[2]);
+				OUTHV[1] += (nHDHBuf[0] + nHDHBuf[1] * 2 + nHDHBuf[2]) >> 1;
 			}
 			else
 			{
