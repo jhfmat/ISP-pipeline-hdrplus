@@ -13,11 +13,11 @@ int CHDRPlus_DPCorrection::ProcessBlock(unsigned int nBlock[][5],unsigned int nM
 	}
 	Max = MAX2(MAX2(nMax[0], nMax[4]), MAX2(nBlock[0][2], nBlock[2][2]));
 	Min = MIN2(MIN2(nMin[0], nMin[4]), MIN2(nBlock[0][2], nBlock[2][2]));
-	if (m_bWhitePointCEnable == 1 && Y > Max + nWhitePointCThre)//nWhitePointCThre越大则进来少去白点少
+	if (m_bWhitePointCEnable == 1 && Y > Max + nWhitePointCThre)
 	{
 		Y = Max;
 	}
-	if (m_bBlackPointCEnable == 1 && Y + nBlackPointCThre < Min)//nBlackPointCThre越大则进来的少去黑点少
+	if (m_bBlackPointCEnable == 1 && Y + nBlackPointCThre < Min)
 	{
 		Y = Min;
 	}
