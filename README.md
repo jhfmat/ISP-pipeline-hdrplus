@@ -31,15 +31,15 @@ Subclasses contain (MultIntImage, MultiShortImage, MultiUcharImage, MultiUshortI
 For detailed code usage, please refer to the example file.
 ### 3,How to compile a project
 * Window platform: We can use vs2017 to compile(open ISPpipeline.sln)
-* Linux platform: We can use g++ to compile(待更新)
-* Android platform: We can use ndk to compile(待更新)
+* Linux platform: We can use g++ to compile(makefile)
+* Android platform: We can use ndk to compile(android.mk)
 
 # ---------------------------V2.0-----------------------------
 ### 3,Example for surperlowlight(wait for..)
 # 注意事项本算法要求是多帧ev0和多帧ev-x(详细参考demo教材)
 #### 测试图片demo下载链接：https://pan.baidu.com/s/1EWJfSL-iD62dzy0qodP7ww 
 #### 提取码：aaaa
-#### 标定工具下载：待更新xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+#### 标定工具下载：https://pan.baidu.com/s/1EWJfSL-iD62dzy0qodP7ww 
 #### 提取码：aaaa
 #### 基于mat surperlowlight 框架图
 ![ISPpipeline.png](./PictureV2/isppipeline.png)
