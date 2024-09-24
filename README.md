@@ -1,4 +1,4 @@
-# 分享一个全网性能最快的raw图处理sdk一键测试raw视频（普通pc 手机能实时60fp 1080p）
+# 分享一个全网性能最快的raw转yuv图处理sdk,一键测试raw视频（普通pc 手机能实时60fp 1080p）
 链接:https://pan.baidu.com/s/1n3FtWCY1Rn2y8gUlKDXkHQ 
 提取码:aaaa
 
